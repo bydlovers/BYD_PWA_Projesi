@@ -1,7 +1,4 @@
-// manifest.js (içerik değişikliği)
-// Dikkat: Bu JSON değil, JS içine gömülmüş bir JSON nesnesi olmalı
-
-const manifestData = {
+{
     "name": "BYD LOVERS DESTEK",
     "short_name": "BYD Destek",
     "description": "BYD araç sahipleri için hızlı, çevrimdışı çalışabilen bilgi ve destek uygulaması.",
@@ -10,6 +7,7 @@ const manifestData = {
     "background_color": "#F8F8F8",
     "theme_color": "#007AFF",
     "orientation": "portrait",
+
 	"icons": [
         {
             "src": "/favicon/android-chrome-192x192.png",

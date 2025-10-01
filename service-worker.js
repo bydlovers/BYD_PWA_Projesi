@@ -1,18 +1,17 @@
 // service-worker.js
 
-const CACHE_NAME = 'byd-destek-cache-v5'; // Sürüm V4'e yükseltildi
-const DYNAMIC_CACHE_NAME = 'byd-destek-dynamic-v5'; // Dinamik önbellek adı da güncellendi
+const CACHE_NAME = 'byd-destek-cache-v6'; // Sürüm V6'ya yükseltildi
+const DYNAMIC_CACHE_NAME = 'byd-destek-dynamic-v6'; 
 
 // Uygulamanın çevrimdışı çalışması için gerekli tüm statik dosyalar
 const urlsToCache = [
-    '/', // Ana dizin (index.html)
+    '/', 
     'index.html',
     'style.css',
     'script.js',
-    'data.json', // Verilerin çevrimdışı kullanılabilmesi için kritik
-    'photo/destek.jpg', // Uygulama logosu
-    // Manifest dosyası ve ikonlar
-    'manifest.json', // Adının doğru olduğundan emin olun
+    'data.json', 
+    'photo/destek.jpg', 
+    'manifest.json', 
     '/favicon/favicon.ico',
     '/favicon/apple-touch-icon.png',
     '/favicon/android-chrome-192x192.png',
@@ -68,20 +67,19 @@ self.addEventListener('activate', event => {
 
 // 3. GETİRME (FETCH): Her ağ isteğini yakalar ve önbellekten yanıt döner.
 self.addEventListener('fetch', event => {
-    
+    
     // Sadece GET isteklerini ve http/https protokollerini işle
     if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) {
         return;
     }
 
-    // data.json isteği için her zaman ağdan çekmeyi dene, sonra önbelleğe bak (Stale-While-Revalidate benzeri)
-    // *** DÜZELTME: Bu blok artık fetch dinleyicisinin İÇİNDEDİR. ***
-    if (event.request.url.includes('data.json')) {
-        event.respondWith(
-            fetch(event.request).catch(() => caches.match(event.request))
-        );
-        return; // Hata veren return ifadesi artık doğru yerde.
-    }
+    // data.json isteği için her zaman ağdan çekmeyi dene, sonra önbelleğe bak (Stale-While-Revalidate benzeri)
+    if (event.request.url.includes('data.json')) {
+        event.respondWith(
+            fetch(event.request).catch(() => caches.match(event.request))
+        );
+        return; 
+    }
 
     event.respondWith(
         caches.match(event.request).then(cachedResponse => {
@@ -108,3 +106,7 @@ self.addEventListener('fetch', event => {
             });
         }).catch(() => {
             // Ağda ve önbellekte yoksa (örneğin çevrimdışı PDF'ler için)
+            console.log("Ağ ve Önbellek hatası. Yedek yanıt yok.");
+        })
+    ); // <-- EKSİK OLAN İLK PARANTEZ BURADA TAMAMLANDI!
+}); // <-- EKSİK OLAN İKİNCİ PARANTEZ VE NOKTALI VİRGÜL BURADA TAMAMLANDI!

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+<link rel="manifest" href="favicon/manifest.webmanifest" />
+    
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="theme-color" content="#007AFF"> <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="BYD Destek">
+    <meta name="application-name" content="BYD Destek"> 
+    <title>BYD LOVERS DESTEK</title>
+    <link rel="stylesheet" href="style.css" id="cssLink">
+</head>
+<body>
+    <div class="container">
+        <img src="photo/destek.jpg" alt="YouTube" id="appLogo"> 
+        <h1>BYD LOVERS DESTEK</h1>
+        
+        <div class="search-container">
+            <input type="text" id="aramaKutusu" placeholder="Soru yazmaya başlayın (örneğin: 'La' veya 'Şa')...">
+            <div id="oneriler">
+            </div>
+        </div>
+        
+        <div id="sonucAlani">
+            <h2><span id="sonucSoru"></span></h2>
+            
+            <h3 class="sonuc-baslik">Cevap</h3>
+            <p id="sonucCevap" class="sonuc-icerik"></p>
+
+            <h3 class="sonuc-baslik">Video</h3>
+            <p id="sonucVideo" class="sonuc-icerik">Video bağlantısı buraya gelecek.</p>
+            
+            <h3 class="sonuc-baslik">Fotoğraf</h3>
+            <p id="sonucFoto" class="sonuc-icerik">Fotoğraf bağlantısı/görüntüsü buraya gelecek.</p>
+            
+            <h3 class="sonuc-baslik">Kullanım Kılavuzu</h3>
+            
+            <div id="sonucBelgeLink"></div>
+            
+            <div id="sonucPDFGosterici" style="margin-top: 10px;">
+                Belgeler buraya yüklenecek.
+            </div>
+            <h4 class="sonuc-baslik" style="margin-top: 20px;">Kategori</h4>
+            <p id="sonucKategori" class="sonuc-icerik-kategori"></p>
+
+            <h5 class="sonuc-baslik">Etiketler</h5>
+            <p id="sonucEtiketler" class="sonuc-icerik-etiketler"></p>
+        </div>
+    </div>
+
+    <script src="script.js" id="jsScript"></script>
+</body>
+</html>

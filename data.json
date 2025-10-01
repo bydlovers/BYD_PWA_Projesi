@@ -1,0 +1,164 @@
+{
+    "versiyon": "1.204",
+    "veriler": [
+        {
+            "soru": "den5",
+            "cevap": "<p>den5<\/p>",
+            "kategori": "den5",
+            "etiketler": [
+                "den5"
+            ],
+            "foto": "",
+            "video": "",
+            "belge": ""
+        },
+        {
+            "soru": "denn4",
+            "cevap": "<p>den4<\/p>",
+            "kategori": "den4",
+            "etiketler": [
+                "den4"
+            ],
+            "foto": "",
+            "video": "",
+            "belge": ""
+        },
+        {
+            "soru": "den2",
+            "cevap": "<p>den2<\/p>",
+            "kategori": "den2",
+            "etiketler": [
+                "den2"
+            ],
+            "foto": "",
+            "video": "",
+            "belge": ""
+        },
+        {
+            "soru": "den",
+            "cevap": "<p>den<\/p>",
+            "kategori": "den",
+            "etiketler": [
+                "den"
+            ],
+            "foto": "",
+            "video": "",
+            "belge": ""
+        },
+        {
+            "soru": "Bagaj kapatma butonu nasıl çalışıyor? Bagajı buton ile kapatamıyorum.",
+            "cevap": "Bagaj açma butonunu çekince bagaj açılır, basılı turunca kapatır.",
+            "kategori": "DM-i",
+            "etiketler": [
+                "Bagaj",
+                "buton"
+            ],
+            "foto": "",
+            "video": "110 km\/s Hem Ekonomik Hem Lezzetli https:\/\/youtube.com\/shorts\/1STUAQsPAro",
+            "belge": "42,43"
+        },
+        {
+            "soru": "Yetkilendirme nasıl yapılır?",
+            "cevap": "cevabı buraya ayzıyoruz",
+            "kategori": "Bakım",
+            "etiketler": [
+                "lastik",
+                "basınç"
+            ],
+            "foto": "",
+            "video": "https:\/\/www.youtube.com\/shorts\/Qy10IOgSjqY",
+            "belge": "30"
+        },
+        {
+            "soru": "Lastik basıncı ne olmalı?",
+            "cevap": "BYD Seal U-DM-i aracınızın lastik basıncı 36 PSI olmalıdır. Ayrıntılı bilgi için aşağıdaki videoyu izleyebilirsiniz.",
+            "kategori": "Bakım",
+            "etiketler": [
+                "lastik",
+                "hava",
+                "psi",
+                "güvenlik",
+                "bakım"
+            ],
+            "foto": "https:\/\/www.uniroyal-tyres.com\/adobe\/dynamicmedia\/deliver\/dm-aid--1ab64736-b0d9-499f-b399-570169c1125d\/uniroyal-tyre-pressure.png",
+            "video": "https:\/\/youtu.be\/Nd4ni6W_pGk?si=hUU0QcwFgu2tJmkd",
+            "belge": "45"
+        },
+        {
+            "soru": "Lastik basıncı aracın neresinde yazar?",
+            "cevap": "Sürücü kapısını açtığınızda iç tarafta aracınız için tavsiye edilen lastik basıncı bilgisini görebilirsiniz. Ayrıntılı bilgi için aşağıdaki videoyu izleyebilirsiniz.",
+            "kategori": "Bakım",
+            "etiketler": [
+                "lastik",
+                "hava",
+                "psi",
+                "güvenlik",
+                "bakım"
+            ],
+            "foto": "https:\/\/superoto.com.tr\/wp-content\/uploads\/2025\/04\/lastik-basinc-uyarisi-sonmuyor.webp",
+            "video": "https:\/\/youtube.com\/shorts\/1zTGbi0quY0?si=pqYYPo-GDNIfb2JV",
+            "belge": "10,11,12"
+        },
+        {
+            "soru": "Lastik basıncı uyarı lambası sönmüyor? SARI renk uyarı veriyor.",
+            "cevap": "BYD aracınızın optimum performansı ve güvenliği için lastik basınçları genellikle kapı içindeki etikette belirtilir. Ortalama olarak 35 PSI civarındadır, ancak her zaman aracınızın kılavuzunu kontrol edin.",
+            "kategori": "Bakım",
+            "etiketler": [
+                "lastik",
+                "hava",
+                "psi",
+                "güvenlik",
+                "bakım"
+            ],
+            "foto": "\/lastik_basinci.jpg",
+            "video": "https:\/\/youtube.com\/watch?v=LastikBasinci_Ornek",
+            "belge": "Kullanım Kılavuzu - Sayfa 45"
+        },
+        {
+            "soru": "Şarj süreleri nasıl optimize edilir?",
+            "cevap": "Şarj sürelerini optimize etmek için genellikle aracınızı %20-80 aralığında tutmanız önerilir. Soğuk havalarda bataryayı ön koşullandırma (pre-conditioning) özelliğini kullanmak süreyi kısaltır.",
+            "kategori": "Şarj",
+            "etiketler": [
+                "batarya",
+                "pil",
+                "hız",
+                "menzil",
+                "kış",
+                "soğuk hava"
+            ],
+            "foto": "\/sarj_optimizasyon.jpg",
+            "video": "https:\/\/youtube.com\/watch?v=SarjIpuclari_Ornek",
+            "belge": "Batarya Yönetim Sistemi Dokümanı"
+        },
+        {
+            "soru": "Dolphin'in bagaj hacmi kaç litredir?",
+            "cevap": "BYD Dolphin modelinin standart bagaj hacmi yaklaşık 345 litredir. Arka koltuklar katlandığında bu hacim önemli ölçüde artar.",
+            "kategori": "Model Bilgisi",
+            "etiketler": [
+                "dolphin",
+                "ölçü",
+                "hacim",
+                "teknik",
+                "donanım"
+            ],
+            "foto": "\/dolphin_bagaj.jpg",
+            "video": "https:\/\/youtube.com\/watch?v=DolphinBagaj_Ornek",
+            "belge": "Dolphin Teknik Özellikler Broşürü"
+        },
+        {
+            "soru": "Dolphin'in oto start\/stop özelliği var mı?",
+            "cevap": "BYD Dolphin 2024 modellerde yok ama 2025 modellerde oto start\/stop özelliği var.",
+            "kategori": "Dolphin",
+            "etiketler": [
+                "dolphin",
+                "ölçü",
+                "hacim",
+                "teknik",
+                "donanım"
+            ],
+            "foto": "\/dolphin_bagaj.jpg",
+            "video": "https:\/\/youtube.com\/shorts\/D9jiJtPXN9Y?si=tNFPfusW25p31fbE",
+            "belge": "33,34"
+        }
+    ]
+}

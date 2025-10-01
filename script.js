@@ -77,7 +77,9 @@
         sonucCevap.textContent = veri.cevap;
         
         sonucKategori.textContent = veri.kategori;
-        sonucEtiketler.textContent = veri.etiketler.join(', ');
+		sonucEtiketler.textContent = Array.isArray(veri.etiketler) && veri.etiketler.length > 0
+                             ? veri.etiketler.join(', ') 
+                             : 'Etiket bulunmamaktadır.';
         
         // **PDF GÖSTERME MANTIĞI (iFrame ENTEGRASYONU)**
         

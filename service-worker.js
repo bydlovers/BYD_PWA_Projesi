@@ -1,22 +1,29 @@
-const CACHE_NAME = 'byd-destek-cache-v2'; // Önbellek sürümü
-const DYNAMIC_CACHE_NAME = 'byd-destek-dynamic-v2';
+// service-worker.js
 
-// Uygulamanın çevrimdışı çalışması için gerekli tüm statik dosyalar
+const CACHE_NAME = 'byd-destek-cache-v3'; // Cache sürümünü v3'e yükseltiyoruz
+const DYNAMIC_CACHE_NAME = 'byd-destek-dynamic-v3';
+
+// ...
+
 const urlsToCache = [
-    '/', // Ana dizin (index.html)
-    'index.html',
-    'style.css',
-    'script.js',
-    'data.json', // Verilerin çevrimdışı kullanılabilmesi için kritik
-    'photo/destek.jpg', // Uygulama logosu
-    // Favori ikonları ve Manifest dosyası (PWA için zorunlu)
- 'favicon/manifest.webmanifest',
+    '/',
+    'index.html',
+    'style.css',
+    'script.js',
+    'data.json',
+    'photo/destek.jpg',
+    // Manifest dosyasının kök dizinde olduğunu varsayarak:
+    'manifest.json', // Adının "manifest.json" olduğundan emin olun!
+    
+    // Diğer ikon yolları
     '/favicon/favicon.ico',
-    '/favicon/apple-touch-icon.png',
-    '/favicon/android-chrome-192x192.png',
-    '/favicon/android-chrome-512x512.png',
-    '/favicon/maskable_icon_x512.png'
+    '/favicon/apple-touch-icon.png',
+    '/favicon/android-chrome-192x192.png',
+    '/favicon/android-chrome-512x512.png',
+    '/favicon/maskable_icon_x512.png'
 ];
+
+// ... geri kalan kod
 
 
 // 1. KURULUM (INSTALL): Service Worker yüklendiğinde statik dosyaları önbelleğe alır.

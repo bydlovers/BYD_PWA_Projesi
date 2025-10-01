@@ -1,7 +1,7 @@
 // service-worker.js
 
-const CACHE_NAME = 'byd-destek-cache-v4'; // Sürüm V4'e yükseltildi
-const DYNAMIC_CACHE_NAME = 'byd-destek-dynamic-v4'; // Dinamik önbellek adı da güncellendi
+const CACHE_NAME = 'byd-destek-cache-v5'; // Sürüm V4'e yükseltildi
+const DYNAMIC_CACHE_NAME = 'byd-destek-dynamic-v5'; // Dinamik önbellek adı da güncellendi
 
 // Uygulamanın çevrimdışı çalışması için gerekli tüm statik dosyalar
 const urlsToCache = [

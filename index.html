@@ -55,6 +55,20 @@
         </div>
     </div>
 
-    <script src="script.js" id="jsScript"></script>
+<script src="script.js" id="jsScript"></script>
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        // Kapsamın (Scope) kök dizin ('/') olduğunu garanti ediyoruz
+        navigator.serviceWorker.register('/service-worker.js', {scope: '/'})
+            .then(registration => {
+                console.log('ServiceWorker kaydı başarılı. Kapsam:', registration.scope);
+            })
+            .catch(error => {
+                console.error('ServiceWorker kaydı başarısız:', error);
+            });
+    });
+}
+</script>
 </body>
 </html>

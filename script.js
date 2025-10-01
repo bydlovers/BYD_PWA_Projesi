@@ -191,10 +191,10 @@
         }
 
         // FİLTRELEME: Soru Cümlesinde VEYA Etiketlerde Eşleşme
-        const eslesenler = byd_verileri.filter(veri => 
-            veri.soru.toLowerCase().includes(inputDegeri) ||
-            veri.etiketler.some(etiket => etiket.toLowerCase().includes(inputDegeri))
-        );
+        const eslesenler = byd_verileri.filter(veri => 
+    	veri.soru.toLowerCase().includes(inputDegeri) ||
+    	(Array.isArray(veri.etiketler) && veri.etiketler.some(etiket => etiket.toLowerCase().includes(inputDegeri)))
+		);
 
         eslesenler.forEach(veri => {
             const oneriItem = document.createElement('div');

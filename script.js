@@ -1,3 +1,15 @@
+// Mobil PWA'da güncelliği sağlamak için sayfa yüklendiğinde yenileme yapar.
+// (Sadece tarayıcı yeni bir Worker sürümü bulamazsa işe yarar)
+if (window.performance.navigation.type === 1) {
+    // Sayfa zorla yenilenmemişse (ilk yükleme, geri/ileri değilse)
+    // Bu mantık, bazı tarayıcılarda gereksiz döngüyü önler.
+    // Ancak mobil PWA'da zorla yenileme için en güvenli yol budur:
+    console.log("Mobil uygulama içi yenileme başlatılıyor...");
+    // Tarayıcıya önbelleği boşaltıp yeni içeriği getirmesini söyler
+    window.location.reload(true); 
+} 
+// Not: Şifreleme mantığı artık loadData'yı tetiklediği için, bu yenileme mantığı ile çakışmaz.
+
 // Gerekli DOM elemanlarını seçme
     const aramaKutusu = document.getElementById('aramaKutusu');
     const onerilerDiv = document.getElementById('oneriler');

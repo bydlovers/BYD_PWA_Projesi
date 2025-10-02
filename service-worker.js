@@ -1,7 +1,7 @@
 // service-worker.js
 
-const CACHE_NAME = 'byd-destek-cache-v6'; // Sürüm V6'ya yükseltildi
-const DYNAMIC_CACHE_NAME = 'byd-destek-dynamic-v6'; 
+const CACHE_NAME = 'byd-destek-cache-v7'; // Sürüm V6'ya yükseltildi
+const DYNAMIC_CACHE_NAME = 'byd-destek-dynamic-v7'; 
 
 // Uygulamanın çevrimdışı çalışması için gerekli tüm statik dosyalar
 const urlsToCache = [

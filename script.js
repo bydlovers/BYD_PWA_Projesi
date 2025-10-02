@@ -12,7 +12,7 @@
     // HTML'de YAPILAN DEĞİŞİKLİKLERE UYGUN YENİ BELGE ALANI TANIMLAMALARI
     // Eski: const sonucBelge = document.getElementById('sonucBelge'); ARTIK KULLANILMIYOR
     const sonucBelgeLink = document.getElementById('sonucBelgeLink'); // Yedek linkler için
-    const sonucPDFGosterici = document.getElementById('sonucPDFGosterici'); // iFrame'ler için
+    const sonucJPGGosterici = document.getElementById('sonucJPGGosterici'); // iFrame'ler için
 
     // Versiyon yönetimindeki HTML elementlerini seçme
     const cssLink = document.getElementById('cssLink');
@@ -81,29 +81,29 @@
                              ? veri.etiketler.join(', ') 
                              : 'Etiket bulunmamaktadır.';
         
-        // **PDF GÖSTERME MANTIĞI (iFrame ENTEGRASYONU)**
+        // **JPG GÖSTERME MANTIĞI (iFrame ENTEGRASYONU)**
         
         // Her çağrıda önceki içeriği temizle
-        if(sonucPDFGosterici) sonucPDFGosterici.innerHTML = '';
+        if(sonucJPGGosterici) sonucJPGGosterici.innerHTML = '';
         if(sonucBelgeLink) sonucBelgeLink.innerHTML = '';
         
-        if (veri.belge && sonucPDFGosterici && sonucBelgeLink) {
+        if (veri.belge && sonucJPGGosterici && sonucBelgeLink) {
             const sayfaNumaralari = String(veri.belge).split(',').map(s => s.trim()).filter(s => s.length > 0);
             
-            let pdfGostericiHTML = '';
+            let JPGGostericiHTML = '';
             
             sayfaNumaralari.forEach(sayfaNo => {
                 const temizSayfaNo = sayfaNo.replace(/[^a-zA-Z0-9_]/g, '');
-                const pdfYolu = `kilavuz/kil_${temizSayfaNo}.pdf`;
+                const JPGYolu = `kilavuz/kil_${temizSayfaNo}.JPG`;
                 
                 // Her sayfa için ayrı bir iFrame oluştur
-                pdfGostericiHTML += `
+                JPGGostericiHTML += `
                     <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
                         <h5 style="background-color: #f7f7f7; padding: 10px; margin: 0; font-size: 1em; color: #333;">
                             Kılavuz Sayfa ${sayfaNo}
                         </h5>
                         <iframe 
-                            src="${pdfYolu}" 
+                            src="${JPGYolu}" 
                             style="width: 100%; height: 600px; border: none; display: block;" 
                             frameborder="0">
                             Bu tarayıcı iFrame'i desteklemiyor.
@@ -113,7 +113,7 @@
 
                 // Yedek bağlantıları oluşturma (iFrame başarısız olursa)
                 sonucBelgeLink.innerHTML += `
-                     <a href="${pdfYolu}" target="_blank" style="
+                     <a href="${JPGYolu}" target="_blank" style="
                         display: inline-block;
                         margin: 5px 10px 5px 0;
                         color: #007AFF; 
@@ -123,12 +123,12 @@
                 `;
             });
             
-            sonucPDFGosterici.innerHTML = pdfGostericiHTML;
+            sonucJPGGosterici.innerHTML = JPGGostericiHTML;
 
         } else {
             // Eğer veri yoksa veya HTML elementleri bulunamazsa mesaj göster
-            if (sonucPDFGosterici) {
-                sonucPDFGosterici.textContent = "İlgili kılavuz belgesi bulunmamaktadır.";
+            if (sonucJPGGosterici) {
+                sonucJPGGosterici.textContent = "İlgili kılavuz belgesi bulunmamaktadır.";
             }
         }
         

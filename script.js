@@ -96,7 +96,20 @@
                 const temizSayfaNo = sayfaNo.replace(/[^a-zA-Z0-9_]/g, '');
                 const JPGYolu = `kilavuz/kil_${temizSayfaNo}.JPG`;
                 
-                
+                // Her sayfa için ayrı bir iFrame oluştur
+                JPGGostericiHTML += `
+                    <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                        <h5 style="background-color: #f7f7f7; padding: 10px; margin: 0; font-size: 1em; color: #333;">
+                            Kılavuz Sayfa ${sayfaNo}
+                        </h5>
+                        <iframe 
+                            src="${JPGYolu}" 
+                            style="width: 100%; height: 600px; border: none; display: block;" 
+                            frameborder="0">
+                            Bu tarayıcı iFrame'i desteklemiyor.
+                        </iframe>
+                    </div>
+                `;
 
                 // Yedek bağlantıları oluşturma (iFrame başarısız olursa)
                 sonucBelgeLink.innerHTML += `

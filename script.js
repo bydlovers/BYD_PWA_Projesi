@@ -106,7 +106,7 @@ if (window.performance.navigation.type === 1) {
             
             sayfaNumaralari.forEach(sayfaNo => {
                 const temizSayfaNo = sayfaNo.replace(/[^a-zA-Z0-9_]/g, '');
-                const JPGYolu = `kilavuz/kil_${temizSayfaNo}.JPG`;
+                const JPGYolu = `kilavuz/kil_${temizSayfaNo}.jpg`;
                 
                 // Her sayfa için ayrı bir iFrame oluştur
                 JPGGostericiHTML += `

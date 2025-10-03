@@ -52,7 +52,7 @@ async function verileriYukle() {
     try {
         // !!! KRİTİK DEĞİŞİKLİK BURADA !!!
         // GitHub Pages için depo adını yola ekliyoruz
-        const response = await fetch('/byd-destek-pwa/data.json'); 
+        const response = await fetch('byd-destek-pwa/data.json'); 
         
         if (!response.ok) {
             const errorMsg = `Sunucu Hatası: ${response.status}. JSON dosyasına erişilemiyor.`;

@@ -2,7 +2,7 @@
     "name": "BYD LOVERS",
     "short_name": "BYD Lovers",
     "description": "BYD araç sahipleri için hızlı, çevrimdışı çalışabilen bilgi ve destek uygulaması.",
-    "start_url": "/index.html",
+	"start_url": "/byd-destek-pwa/index.html",
     "display": "standalone",
     "background_color": "#F8F8F8",
     "theme_color": "#007AFF",

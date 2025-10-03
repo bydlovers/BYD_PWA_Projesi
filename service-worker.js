@@ -1,7 +1,7 @@
 // service-worker.js
 
-const CACHE_NAME = 'byd-destek-cache-v9'; // Sürüm V6'ya yükseltildi
-const DYNAMIC_CACHE_NAME = 'byd-destek-dynamic-v9'; 
+const CACHE_NAME = 'byd-destek-cache-v10'; // Sürüm V6'ya yükseltildi
+const DYNAMIC_CACHE_NAME = 'byd-destek-dynamic-v10'; 
 
 // Uygulamanın çevrimdışı çalışması için gerekli tüm statik dosyalar
 const urlsToCache = [
@@ -12,11 +12,11 @@ const urlsToCache = [
     'data.json', 
     'photo/destek.jpg', 
     'manifest.json', 
-    'BYD_PWA_Projesi/favicon/favicon.ico',
-    'BYD_PWA_Projesi/favicon/apple-touch-icon.png',
-    'BYD_PWA_Projesi/favicon/android-chrome-192x192.png',
-    'BYD_PWA_Projesi/favicon/android-chrome-512x512.png',
-    'BYD_PWA_Projesi/favicon/maskable_icon_x512.png'
+    'favicon/favicon.ico',
+    'favicon/apple-touch-icon.png',
+    'favicon/android-chrome-192x192.png',
+    'favicon/android-chrome-512x512.png',
+    'favicon/maskable_icon_x512.png'
 ];
 
 

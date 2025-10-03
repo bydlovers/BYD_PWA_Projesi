@@ -47,37 +47,39 @@ if (window.performance.navigation.type === 1) {
         return videoId;
     }
 
-    // JSON dosyasını asenkron olarak okuma ve verileri yükleme
-    async function verileriYukle() {
-        try {
-            const response = await fetch('data.json');
-            
-            if (!response.ok) {
-                const errorMsg = `Sunucu Hatası: ${response.status}. JSON dosyasına erişilemiyor.`;
-                throw new Error(errorMsg);
-            }
-            
-            const tamVeri = await response.json();
-            
-            // 1. VERSİYON KONTROLÜ VE UYGULAMASI (Önbellek aşımı için)
-            if (tamVeri.versiyon && cssLink) {
-                const versiyon = tamVeri.versiyon;
-                cssLink.href = `style.css?v=${versiyon}`;
-                console.log(`Versiyon başarıyla uygulandı: v${versiyon}`);
-            }
-
-            // 2. VERİLERİN YÜKLENMESİ
-            byd_verileri = tamVeri.veriler; 
-            
-            console.log("Veriler başarıyla yüklendi.");
-            aramaKutusu.placeholder = "Soru, kategori veya etiket yazmaya başlayın...";
-
-        } catch (error) {
-            console.error("Veri yüklenirken bir hata oluştu:", error);
-            aramaKutusu.placeholder = "HATA: Veriler yüklenemedi. Sunucu erişimi hatası.";
-            aramaKutusu.disabled = true; 
+// script.js - verileriYukle fonksiyonu
+async function verileriYukle() {
+    try {
+        // !!! KRİTİK DEĞİŞİKLİK BURADA !!!
+        // GitHub Pages için depo adını yola ekliyoruz
+        const response = await fetch('/byd-destek-pwa/data.json'); 
+        
+        if (!response.ok) {
+            const errorMsg = `Sunucu Hatası: ${response.status}. JSON dosyasına erişilemiyor.`;
+            throw new Error(errorMsg);
         }
+        
+        const tamVeri = await response.json();
+        
+        // 1. VERSİYON KONTROLÜ VE UYGULAMASI (Önbellek aşımı için)
+        if (tamVeri.versiyon && cssLink) {
+            const versiyon = tamVeri.versiyon;
+            cssLink.href = `style.css?v=${versiyon}`;
+            console.log(`Versiyon başarıyla uygulandı: v${versiyon}`);
+        }
+
+        // 2. VERİLERİN YÜKLENMESİ
+        byd_verileri = tamVeri.veriler; 
+        
+        console.log("Veriler başarıyla yüklendi.");
+        aramaKutusu.placeholder = "Soru, kategori veya etiket yazmaya başlayın...";
+
+    } catch (error) {
+        console.error("Veri yüklenirken bir hata oluştu:", error);
+        aramaKutusu.placeholder = "HATA: Veriler yüklenemedi. Sunucu erişimi hatası.";
+        aramaKutusu.disabled = true; 
     }
+}
 
     // Sayfa yüklendiğinde verileri çek
     verileriYukle();

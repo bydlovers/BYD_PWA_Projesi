@@ -12,11 +12,11 @@ const urlsToCache = [
     'data.json', 
     'photo/destek.jpg', 
     'manifest.json', 
-    'favicon/favicon.ico',
-    'favicon/apple-touch-icon.png',
-    'favicon/android-chrome-192x192.png',
-    'favicon/android-chrome-512x512.png',
-    'favicon/maskable_icon_x512.png'
+    'BYD_PWA_Projesi/favicon/favicon.ico',
+    'BYD_PWA_Projesi/favicon/apple-touch-icon.png',
+    'BYD_PWA_Projesi/favicon/android-chrome-192x192.png',
+    'BYD_PWA_Projesi/favicon/android-chrome-512x512.png',
+    'BYD_PWA_Projesi/favicon/maskable_icon_x512.png'
 ];
 
 

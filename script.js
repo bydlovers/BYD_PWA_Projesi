@@ -296,6 +296,10 @@ function aramaYap(aramaTerimi) {
     gosterOneriListesi(oneriler);
 }
 
+// script.js
+
+// ... (Diğer tüm fonksiyonlar ve değişkenler yukarıda kalacak)
+
 /**
  * Öneri listesi HTML'ini oluşturur ve gösterir.
  * @param {Array<Object>} oneriler - Skorlanmış ve sıralanmış kayıtlar dizisi
@@ -311,17 +315,18 @@ function gosterOneriListesi(oneriler) {
             const oneriItem = document.createElement('div');
             oneriItem.classList.add('oneri-item');
             
-            // 1. Vurgulama Mantığı (Fuzzy Matching için geliştirildi)
+            // 1. Vurgulama Mantığı (Yazım Hatalarına Karşı Esnekleştirildi)
             let vurgulanmisSoru = kayit.soru;
             
             if (aramaTerimi.length >= 2) {
                 
                 // Kaydın tüm anahtar kelimelerini ayır
+                // Not: Kelime sınırlarını daha esnek tutmak için sadece boşlukları kullanıyoruz
                 const tumKelimeler = [
                     ...kayit.soru.toLowerCase().split(/\s+/), 
                     ...kayit.kategori.toLowerCase().split(/\s+/), 
                     ...(Array.isArray(kayit.etiketler) ? kayit.etiketler.map(e => e.toLowerCase()) : [])
-                ];
+                ].filter(k => k.length > 2); // Çok kısa kelimeleri ele
                 
                 let enIyiEslesme = '';
                 let enDusukSkor = Infinity;
@@ -329,8 +334,10 @@ function gosterOneriListesi(oneriler) {
                 // Tüm kelimeler arasında arama terimiyle en yakın olanı bul
                 tumKelimeler.forEach(kelime => {
                     const skor = benzerlikSkoruHesapla(kelime, aramaTerimi);
-                    // Sadece çok yakın eşleşmeleri dikkate al (skor 2.0'dan küçük)
-                    if (skor < 2.0 && skor < enDusukSkor) {
+                    
+                    // ⚠️ KRİTİK DEĞİŞİKLİK: Eşik değeri 2.0'dan 3.5'e yükseltildi. 
+                    // Bu, 'lstik' ve 'lastik' gibi kelimelerin, vurgulama için yeterince yakın sayılmasını sağlar.
+                    if (skor < 3.5 && skor < enDusukSkor) { 
                         enDusukSkor = skor;
                         enIyiEslesme = kelime;
                     }
@@ -339,13 +346,18 @@ function gosterOneriListesi(oneriler) {
                 // Eğer tatmin edici bir kelime bulunduysa, o kelimeyi vurgula
                 if (enIyiEslesme) {
                     // Kayıttaki orijinal kelimeyi (büyük/küçük harf duyarlı) bulmak için RegExp kullanılır
-                    const regex = new RegExp(`(${enIyiEslesme})`, 'gi');
-                    vurgulanmisSoru = kayit.soru.replace(regex, '<b>$1</b>');
-                } else {
-                    // Eğer fuzzy match çok zayıfsa, yine de kullanıcının tam girdiği terimi vurgulamayı dene
-                    const regex = new RegExp(`(${aramaTerimi})`, 'gi');
-                    vurgulanmisSoru = kayit.soru.replace(regex, '<b>$1</b>');
-                }
+                    // Sadece tam kelime eşleşmesini vurgulamak için \b (word boundary) kullanıldı
+                    const regex = new RegExp(`\\b(${enIyiEslesme})\\b`, 'gi');
+                    
+                    // Eğer \b ile eşleşme olmazsa, daha gevşek bir eşleşmeyi dene
+                    if (!kayit.soru.match(regex)) {
+                        const gevsekRegex = new RegExp(`(${enIyiEslesme})`, 'gi');
+                        vurgulanmisSoru = kayit.soru.replace(gevsekRegex, '<b>$1</b>');
+                    } else {
+                        vurgulanmisSoru = kayit.soru.replace(regex, '<b>$1</b>');
+                    }
+                } 
+                // Eğer fuzzy match zayıfsa, hiçbir şey vurgulama. (Bu, gereksiz bold'ları engeller)
             }
             
             // 2. Öneriye kategori bilgisini ekle
@@ -371,6 +383,7 @@ function gosterOneriListesi(oneriler) {
         onerilerDiv.style.display = 'none';
     }
 }
+
 
 // =================================================================
 // 5. OLAY DİNLEYİCİLERİ

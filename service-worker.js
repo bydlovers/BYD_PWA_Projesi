@@ -1,7 +1,7 @@
 // service-worker.js
 
-const CACHE_NAME = 'byd-destek-cache-v23';
-const DYNAMIC_CACHE_NAME = 'byd-destek-dynamic-v23'; 
+const CACHE_NAME = 'byd-destek-cache-v24';
+const DYNAMIC_CACHE_NAME = 'byd-destek-dynamic-v24'; 
 
 // Uygulamanın çevrimdışı çalışması için gerekli tüm statik dosyalar
 const urlsToCache = [

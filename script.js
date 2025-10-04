@@ -262,7 +262,6 @@ function aramaYap(aramaTerimi) {
     }
 
     const bulunanSonuclar = [];
-    // Tüm kelimelerin toplam skoru için üst eşik (Örn: 5)
     const MAX_ONERI_SKORU_TOPLAM = 5.0; 
 
     if (!byd_verileri || byd_verileri.length === 0) return; 

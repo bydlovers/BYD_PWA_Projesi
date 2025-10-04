@@ -1,155 +1,215 @@
-/* * iOS benzeri stil: Minimalist, temiz ve okunaklı.
-     * Font: Sistem fontlarını (San Francisco/SF Pro) kullanmak en iyisidir.
-     * Eğer sistem fontu yoksa, modern ve temiz 'Segoe UI', 'Roboto' veya 'Helvetica Neue' kullanılır.
-     */
-    body {
-        /* Sistem fontlarını önceliklendir (iOS'ta SF Pro'yu kullanır) */
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-        margin: 0;
-        padding: 0;
-        background-color: #F8F8F8; /* Hafif kırık beyaz arkaplan */
-        color: #1C1C1E; /* Koyu gri, okunaklı metin rengi */
-        line-height: 1.4;
-        scroll-behavior: smooth; /* Kaydırma efektini koru */
-    }
+/*
+ * BYD LOVERS DESTEK UYGULAMASI - iOS STİLİ
+ * Son Düzenleme: Tipografi ve Görsel Tutarlılık.
+ */
+
+/* ========================================================================
+   1. GENEL YAPILANDIRMA VE FONT
+   ======================================================================== */
+body {
+    /* Sistem fontlarını önceliklendir (iOS'ta SF Pro'yu kullanır) */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    margin: 0;
+    padding: 0;
+    background-color: #F8F8F8; /* Hafif kırık beyaz arkaplan (iOS Standart) */
+    color: #1C1C1E; /* Koyu gri, okunaklı metin rengi */
+    line-height: 1.4;
+    scroll-behavior: smooth; 
+    -webkit-font-smoothing: antialiased; /* Fontları yumuşat */
+    min-height: 100vh;
+}
     
-    .container {
-        max-width: 700px; /* iOS uygulamaları genellikle dar ve merkezidir */
-        margin: 0 auto;
-        padding: 20px 15px;
-    }
-/* Logo Stili */
-#appLogo {
-    display: block; /* Logoyu bir blok öğesi yapar */
-    margin: 0 auto 20px auto; /* Logoyu ortalar ve altına biraz boşluk bırakır */
-    max-width: 150px; /* Maksimum genişliğini belirler (Mobil uyumluluk için çok önemlidir!) */
-    height: auto; /* En-boy oranını korur */
+.container {
+    max-width: 700px; 
+    margin: 0 auto;
+    padding: 20px 15px;
 }
 
+/* ========================================================================
+   2. LOGO VE TEMEL BAŞLIKLAR
+   ======================================================================== */
+#appLogo {
+    display: block; 
+    margin: 0 auto 30px auto; /* Alt boşluğu artırdık */
+    max-width: 150px; 
+    height: auto; 
+    /* Logo için hafif bir gölge ekleyelim */
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.05)); 
+}
 
-    h1 {
-        text-align: center;
-        color: #007AFF; /* iOS Mavi Rengi (Linkler/Ana Vurgu Rengi) */
-        font-weight: 700; /* Kalın başlık */
-        margin-bottom: 25px;
-        font-size: 28px;
-    }
-    /* Arama Kutusu ve Öneriler (iOS Search Bar Stili) */
-    .search-container {
-        position: relative;
-        margin-bottom: 20px;
-    }
+/* Sayfa Başlığı (Görsel tutarlılık için H1'i kaldırdık) */
+/* h1 etiketini index.html'den kaldırmanız tavsiye edilir, zaten logo var. */
+h1 {
+    text-align: center;
+    color: #007AFF; 
+    font-weight: 700; 
+    margin-bottom: 25px;
+    font-size: 28px;
+}
 
-    #aramaKutusu {
-        width: 100%;
-        padding: 12px 15px;
-        font-size: 16px;
-        border: 1px solid #E0E0E0; /* İnce ve hafif kenarlık */
-        border-radius: 10px; /* Yuvarlak köşeler */
-        box-sizing: border-box;
-        background-color: white; /* Kutunun beyaz olması */
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Çok hafif gölge */
-        transition: all 0.2s;
-    }
-    #aramaKutusu:focus {
-        outline: none;
-        border-color: #007AFF; /* Odaklandığında mavi vurgu */
-        box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2); /* Hafif dış ışık */
-    }
+/* ========================================================================
+   3. ARAMA KUTUSU VE ÖNERİLER (SEARCH BAR)
+   ======================================================================== */
+.search-container {
+    position: relative;
+    margin-bottom: 25px; /* Alt boşluğu artırdık */
+}
 
-    /* Öneri Listesi Stili (Table View Listesi gibi) */
-    #oneriler {
-        position: absolute;
-        z-index: 10;
-        width: 100%;
-        border: 1px solid #D1D1D1;
-        border-radius: 10px;
-        margin-top: 5px;
-        max-height: 250px;
-        overflow-y: auto;
-        background-color: white;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+#aramaKutusu {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 1em; /* 16px yerine em kullandık */
+    border: none; /* iOS tarzı için kenarlığı kaldırdık */
+    border-radius: 12px; /* Daha yuvarlak köşeler */
+    box-sizing: border-box;
+    background-color: white; 
+    /* iOS tarzı belirgin gölge */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+#aramaKutusu:focus {
+    outline: none;
+    /* Odaklanıldığında gölgeyi artır */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); 
+}
+
+/* Öneri Listesi Stili (Table View Listesi gibi) */
+#oneriler {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    /* Kenarlığı kaldırıp gölgeyi ana kutuya benzetelim */
+    border: none;
+    border-radius: 12px;
+    margin-top: 5px;
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Daha belirgin gölge */
+}
+
+.oneri-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #EDEDED; /* Daha ince, temiz ayırıcı */
+    font-size: 1em;
+    color: #1C1C1E;
+    transition: background-color 0.15s;
+}
+.oneri-item:last-child {
+    border-bottom: none;
+}
+.oneri-item:hover {
+    background-color: #F0F0F5; /* Hafif gri vurgu */
+}
+
+/* Klavye ile seçilen aktif öğe (Mavi Vurgu) */
+.aktif-oneri {
+    background-color: #007AFF; 
+    color: white; 
+}
+.aktif-oneri b {
+    color: white !important;
+}
+
+/* ========================================================================
+   4. SONUÇ ALANI (CARD STİLİ)
+   ======================================================================== */
+#sonucAlani {
+    margin-top: 40px;
+    background-color: white;
+    padding: 25px;
+    border-radius: 14px; /* Köşeleri daha da yuvarlak yaptık */
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); /* Yumuşak gölge */
+    display: none;
+}
+
+/* Soru Başlığı */
+#sonucSoru {
+    font-size: 1.6em; /* Daha büyük ve belirgin */
+    color: #007AFF; 
+    font-weight: 700;
+    display: block;
+    margin-bottom: 20px;
+}
+
+/* İçerik Başlıkları (Cevap, Video, Fotoğraf vb.) */
+.sonuc-baslik {
+    color: #3C3C43; /* Daha yumuşak gri başlık rengi */
+    font-weight: 600; /* SemiBold */
+    font-size: 1.1em;
+    margin-top: 25px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #EAEAEA; /* Çok ince ayırıcı */
+}
+.sonuc-baslik:first-child {
+    margin-top: 0;
+}
+
+/* Ana Metin İçeriği */
+.sonuc-icerik {
+    margin-top: 10px;
+    font-size: 1em;
+    line-height: 1.6;
+    color: #3C3C43; /* Okunabilirliği artırıldı */
+}
+
+/* ========================================================================
+   5. ETİKET VE KATEGORİ CHIPS
+   ======================================================================== */
+
+.sonuc-icerik-kategori, .sonuc-icerik-etiketler {
+    display: inline-block;
+    /* iOS'un açık gri arka planı */
+    background-color: #EFEFF4; 
+    color: #3C3C43;
+    padding: 4px 10px;
+    border-radius: 12px; /* Pill (hap) görünümü */
+    font-size: 0.85em; /* Biraz daha küçük */
+    font-weight: 500;
+    margin-top: 5px;
+    margin-right: 8px;
+    line-height: 1.2;
+}
+
+/* Etiketler arası boşluğu sağlamak için */
+.sonuc-icerik-etiketler {
+    font-size: 0.8em; 
+}
+
+/* ========================================================================
+   6. LİNKLER VE MEDYA
+   ======================================================================== */
+.sonuc-icerik a, #sonucBelgeLink a {
+    color: #007AFF;
+    text-decoration: none;
+    font-weight: 500;
+}
+.sonuc-icerik a:hover, #sonucBelgeLink a:hover {
+    text-decoration: underline;
+}
+
+/* Görsel/Video Yerleşimi */
+.sonuc-icerik img, #sonucVideo iframe, #sonucJPGGosterici iframe {
+    border-radius: 10px; /* Görsellere yuvarlak köşeler */
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin-top: 10px;
+}
+
+/* ========================================================================
+   7. MOBİL UYUMLULUK
+   ======================================================================== */
+@media (max-width: 600px) {
+    .container {
+        padding: 10px 10px;
     }
-    .oneri-item {
-        padding: 12px 15px;
-        cursor: pointer;
-        border-bottom: 1px solid #F2F2F7; /* Çok ince ayırıcı */
-        font-size: 15px;
-        color: #1C1C1E;
-    }
-    .oneri-item:last-child {
-        border-bottom: none;
-    }
-    .oneri-item:hover {
-        background-color: #F2F2F7; /* Hafif gri vurgu */
-    }
-    /* Klavye ile seçilen aktif öğe (Mavi Vurgu) */
-    .aktif-oneri {
-        background-color: #007AFF; /* iOS Mavi Vurgu */
-        color: white; 
-    }
-    .aktif-oneri:hover {
-        background-color: #007AFF; 
-    }
-    
-    /* Sonuç Alanı (Kart Stili) */
     #sonucAlani {
-        margin-top: 40px;
-        background-color: white;
-        padding: 25px;
-        border-radius: 12px; /* Daha belirgin köşeler */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); /* Yumuşak gölge */
-        display: none;
+        padding: 15px;
     }
-    
-    /* Başlık Stilleri */
-    .sonuc-baslik {
-        color: #007AFF;
-        font-weight: 600;
-        font-size: 18px;
-        margin-top: 25px;
-        padding-bottom: 5px;
-        border-bottom: 1px solid #D1D1D1; /* İnce ayırıcı */
+    #sonucSoru {
+        font-size: 1.4em;
     }
-    .sonuc-baslik:first-child {
-        margin-top: 0;
-    }
-    .sonuc-icerik {
-        margin-top: 8px;
-        font-size: 15px;
-        color: #5856D6; /* Daha yumuşak metin rengi */
-    }
-    .sonuc-icerik-kategori {
-        margin-top: 8px;
-        font-size: 12px;
-        color: #5856D6; /* Daha yumuşak metin rengi */
-    } 
-	.sonuc-icerik-etiketler {
-        margin-top: 8px;
-        font-size: 8px;
-        color: #5856D6; /* Daha yumuşak metin rengi */
-    } 
-
-
-
-
-
-    /* Link Stilleri (iOS gibi) */
-    .sonuc-icerik a {
-        color: #007AFF;
-        text-decoration: none;
-        font-weight: 500;
-    }
-    .sonuc-icerik a:hover {
-        text-decoration: underline;
-    }
-    
-    /* Mobil Uyumluluk */
-    @media (max-width: 600px) {
-        .container {
-            padding: 10px 10px;
-        }
-        h1 {
-            font-size: 24px;
-        }
-    }
+}

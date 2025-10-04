@@ -1,19 +1,20 @@
-// admin.js içinde tinymce.init bloğu
+// admin.js
+// ⚠️ KRİTİK DÜZELTME: selector: '#cevap' kullanılmalı.
+
 tinymce.init({
-    selector: 'cevap', 
-    license_key: 'gpl', // Lisans anahtarını buraya taşıdık
+    selector: '#cevap', // KRİTİK DÜZELTME: ID'yi seçmek için # işareti eklendi
+    license_key: 'gpl', 
     plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
     auto_focus: false, 
-    toolbar: 'undo redo |  bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | forecolor backcolor | removeformat | help',
+    toolbar: 'undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | forecolor backcolor | removeformat | help',
     height: 300,
-    promotion: false, // Ek ayar olarak bunu eklemek faydalı olabilir
-    content_css: false  // Ek ayar olarak bunu eklemek faydalı olabilir
+    promotion: false, 
+    content_css: false 
 });
 
 
-
 document.getElementById('veriFormu').addEventListener('submit', function(e) {
-    e.preventDefault(); // Formun normal submit işlemini durdur
+    e.preventDefault(); 
 
     const durumMesaji = document.getElementById('durumMesaji');
     durumMesaji.style.display = 'none';
@@ -22,7 +23,7 @@ document.getElementById('veriFormu').addEventListener('submit', function(e) {
     const yeniKayit = {
         soru: document.getElementById('soru').value.trim(),
         
-        // KRİTİK GÜNCELLEME: TinyMCE içeriğini alıyoruz.
+        // TinyMCE içeriğini al
         cevap: tinymce.get('cevap').getContent().trim(), 
         kategori: document.getElementById('kategori').value.trim(),
         etiketler: document.getElementById('etiketler').value.trim(), 
@@ -31,13 +32,21 @@ document.getElementById('veriFormu').addEventListener('submit', function(e) {
         belge: document.getElementById('belge').value.trim()
     };
     
-    // Eksik alan kontrolü (sadece required olanlar için)
+    // Eksik alan kontrolü (cevap dahil)
     if (!yeniKayit.soru || !yeniKayit.cevap || !yeniKayit.kategori || !yeniKayit.etiketler) {
         gosterMesaj(false, "Soru, Cevap, Kategori ve Etiketler alanları boş bırakılamaz.");
         return;
     }
+    
+    // TinyMCE boş içerik kontrolü (görsel olarak boş olabilir)
+    if (yeniKayit.cevap.length < 5 && !tinymce.get('cevap').isDirty()) {
+         gosterMesaj(false, "Cevap metni alanı boş olamaz.");
+         return;
+    }
+
 
     // 2. Veriyi sunucuya (PHP betiğine) gönder
+    // ⚠️ PHP betiği ile aynı dizinde olduğundan emin olun
     fetch('save_data.php', {
         method: 'POST',
         headers: {
@@ -51,6 +60,7 @@ document.getElementById('veriFormu').addEventListener('submit', function(e) {
             gosterMesaj(true, `Kayıt başarıyla eklendi! Yeni Versiyon: ${result.body.new_version}`);
             // Başarılı kayıttan sonra formu temizle
             document.getElementById('veriFormu').reset();
+            tinymce.get('cevap').setContent(''); // TinyMCE'yi de temizle
         } else {
             gosterMesaj(false, `Kaydetme Hatası (${result.status}): ${result.body.message || 'Bilinmeyen Hata'}`);
         }
@@ -61,7 +71,7 @@ document.getElementById('veriFormu').addEventListener('submit', function(e) {
     });
 });
 
-// Durum mesajını gösterme fonksiyonu
+// Durum mesajını gösterme fonksiyonu (Değişiklik yapılmadı)
 function gosterMesaj(basarili, mesaj) {
     const durumMesaji = document.getElementById('durumMesaji');
     durumMesaji.textContent = mesaj;

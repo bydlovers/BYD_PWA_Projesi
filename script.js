@@ -352,8 +352,8 @@ function gosterOneriListesi(oneriler, aramaKelimeleri) {
                         // Sadece soru kelimesi ve aranan terim arasındaki skoru hesapla
                         const skor = benzerlikSkoruHesapla(soruKelime, arananTerim);
                         
-                        // En fazla 2.0 Levenshtein uzaklığını bold için kabul et
-                        if (skor < 2.1 && skor < enDusukSkor) { 
+						// En fazla 1.0 Levenshtein uzaklığını bold için kabul et
+						if (skor < 1.1 && skor < enDusukSkor) {  
                             enDusukSkor = skor;
                             enIyiSoruKelime = soruKelime;
                         }

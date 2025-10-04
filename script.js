@@ -43,6 +43,7 @@ function extractVideoId(url) {
 }
 
 
+
 /**
  * Aranan terim ile metin arasındaki basit benzerlik skorunu hesaplar. (FUZZY MATCHING)
  * SKOR NE KADAR DÜŞÜKSE O KADAR İYİDİR. (0 = Mükemmel Eşleşme)
@@ -56,7 +57,7 @@ function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
     const text = aranacakMetin.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
     const query = arananTerim.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
 
-    // Kısa terim ve uzun metin kontrolü (Alakasız sonuçları elemek için)
+    // Kısa terim ve uzun metin kontrolü
     if (query.length <= 3 && text.length > 20 && !text.includes(query)) return Infinity; 
 
 
@@ -65,38 +66,50 @@ function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
         return text.indexOf(query) * 0.01;
     }
 
-    // 2. Basit Yazım Hatası Toleransı (Approximate Substring Match)
+    // 2. Basit Yazım Hatası Toleransı
     let score = 0;
+    let eslesenKarakterSayisi = 0;
+    let lastIndex = -1;
 
     for (let i = 0; i < query.length; i++) {
-        // Karakterin aranacak metinde hiç geçmemesi cezası (2.5 -> 2.0 düşürüldü)
-        if (text.indexOf(query[i]) === -1) {
-            score += 2.0; 
+        const currentChar = query[i];
+        
+        // Karakterin metin içinde sıradan sonraki konumda aranması
+        const currentIndex = text.indexOf(currentChar, lastIndex + 1);
+
+        if (currentIndex === -1) {
+            // Karakter hiç bulunamazsa veya sıradan sonra bulunamazsa ceza
+            score += 1.5; // (2.0'dan 1.5'e düşürüldü)
         } else {
-            // Karakterler arası mesafeyi ve sırayı kontrol et
-            const lastIndex = i > 0 ? text.indexOf(query[i - 1]) : -1;
-            const currentIndex = text.indexOf(query[i], lastIndex + 1);
-            
-            // Sıra bozukluğu cezası (2.0 -> 1.0 düşürüldü)
-            if (currentIndex === -1) {
-                score += 1.0; 
-            } else {
-                score += (currentIndex - lastIndex) * 0.1;
-            }
+            // Karakter doğru sırada bulundu
+            eslesenKarakterSayisi++;
+            // Karakterler arasındaki mesafeden kaynaklanan ceza
+            score += (currentIndex - lastIndex) * 0.05; // Daha da hafifletildi (0.1'den 0.05'e)
+            lastIndex = currentIndex;
         }
     }
     
-    // Yüksek Skor Reddi: Çok fazla hata varsa (terim uzunluğunun 1.5 katından büyükse alakasızdır.)
-    if (score > query.length * 1.5) {
+    // ⚠️ KRİTİK EKSİK HARF BONUSU/CEZASI:
+    // Eşleşen karakter sayısının, aranan terim uzunluğuna oranı
+    const yuzdeEslesme = eslesenKarakterSayisi / query.length;
+    
+    // Eğer eşleşme oranı %75'ten azsa, bu kaydı reddet
+    if (yuzdeEslesme < 0.75) {
         return Infinity;
     }
-    
-    // ⚠️ KRİTİK DEĞİŞİKLİK: Uzunluk farkı cezasını 0.2'den 0.1'e düşürdük. 
-    // Bu, "Lstik" (4) ve "Lastik" (5) arasındaki 1 karakterlik farkın skoru patlatmasını engeller.
+
+    // Uzunluk farkı cezası (Çok hafif tutuldu)
     score += Math.abs(text.length - query.length) * 0.1;
+    
+    // Yüksek Skor Reddi: Eğer skor hala yüksekse
+    // Bu kontrol, önceki kontrollerden daha esnek çalışmalıdır.
+    if (score > 3.5) {
+        return Infinity;
+    }
 
     return score;
 }
+
 function gosterSonuclari(veri) {
     sonucAlani.style.display = 'block';
     

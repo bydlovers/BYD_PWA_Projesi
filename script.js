@@ -253,8 +253,9 @@ function aramaYap(aramaTerimi) {
         return;
     }
 
-    // Düzeltme 1: Arama terimini kelimelere ayırırken minimum 1 harfli kelimeyi filtreye al
-    const aramaKelimeleri = aramaTerimi.toLowerCase().trim().split(/\s+/).filter(w => w.length > **0**); 
+    // Arama terimini kelimelere ayır (Örn: "Lastik Ayarı" -> ["lastik", "ayarı"])
+    // Kısa kelimeleri bile aramaya dahil et (length > 0)
+    const aramaKelimeleri = aramaTerimi.toLowerCase().trim().split(/\s+/).filter(w => w.length > 0); 
     
     if (aramaKelimeleri.length === 0) {
         onerilerDiv.style.display = 'none';
@@ -285,9 +286,9 @@ function aramaYap(aramaTerimi) {
             const kayitKelimeleri = kaynakMetinler.split(/\s+/).filter(w => w.length > 1);
             let enIyiKelimeSkoru = Infinity;
             
-            // **KRİTİK FİLTRELEME SKORU BELİRLEME**
+            // KRİTİK FİLTRELEME SKORU BELİRLEME
             let MaxSkorListeleme = 3.0;
-            // Düzeltme 3: Eğer aranan kelime çok kısaysa, listelemek için daha katı bir skor iste
+            // Eğer aranan kelime çok kısaysa (3 harf veya daha az), listelemek için çok daha katı bir skor iste
             if (arananKelime.length < 4) { 
                 MaxSkorListeleme = 1.0; // Sadece mükemmel eşleşme (skor 0) veya tek harf hatası (skor 1) kabul et
             }
@@ -359,8 +360,9 @@ function gosterOneriListesi(oneriler, aramaKelimeleri) {
                         // Sadece soru kelimesi ve aranan terim arasındaki skoru hesapla
                         const skor = benzerlikSkoruHesapla(soruKelime, arananTerim);
                         
-                        // Düzeltme 2: Boldlama toleransını tekrar 2.1'e çıkardık. "Dolphin" örneğinde boldlama başarılı olmalı.
-                        if (skor < **2.1** && skor < enDusukSkor) { 
+                        // Boldlama toleransı (Hata düzeltildi, çift yıldızlar kaldırıldı)
+                        // 2.1 toleransı, tek harf hatalı doğru yazımlarda boldlama yapmak için gereklidir.
+                        if (skor < 2.1 && skor < enDusukSkor) { 
                             enDusukSkor = skor;
                             enIyiSoruKelime = soruKelime;
                         }
@@ -394,7 +396,6 @@ function gosterOneriListesi(oneriler, aramaKelimeleri) {
         onerilerDiv.style.display = 'none';
     }
 }
-
 
 // =================================================================
 // 5. OLAY DİNLEYİCİLERİ

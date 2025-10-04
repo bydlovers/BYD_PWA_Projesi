@@ -56,6 +56,10 @@ function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
     const text = aranacakMetin.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
     const query = arananTerim.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
 
+    // Eğer arama terimi çok kısaysa ve metin çok uzunsa alakasız say
+    if (query.length < 3 && text.length > 10) return Infinity;
+
+
     // 1. Mükemmel Eşleşme Skoru (Tam olarak içeriyorsa en yüksek öncelik)
     if (text.includes(query)) {
         // Skoru, eşleşmenin metnin neresinde başladığına göre belirle (başlangıçta olması daha iyi)
@@ -86,8 +90,9 @@ function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
         return Infinity;
     }
     
-    // Uzunluk farkına göre skor ekle
-    score += Math.abs(text.length - query.length) * 0.5;
+    // ⚠️ KRİTİK AYARLAMA: Uzunluk farkı cezasını düşürüyoruz. 
+    // Bu, "stat" ve "start" gibi 1 harf eksik/fazla olan kısa kelimelerin kurtarılmasına yardımcı olur.
+    score += Math.abs(text.length - query.length) * 0.2; // 0.5 yerine 0.2 kullanıldı
 
     return score;
 }

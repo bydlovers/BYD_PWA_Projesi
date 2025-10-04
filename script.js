@@ -253,8 +253,8 @@ function aramaYap(aramaTerimi) {
         return;
     }
 
-    // Arama terimini kelimelere ayır (Örn: "Lastik Ayarı" -> ["lastik", "ayarı"])
-    const aramaKelimeleri = aramaTerimi.toLowerCase().trim().split(/\s+/).filter(w => w.length > 1);
+    // Düzeltme 1: Arama terimini kelimelere ayırırken minimum 1 harfli kelimeyi filtreye al
+    const aramaKelimeleri = aramaTerimi.toLowerCase().trim().split(/\s+/).filter(w => w.length > **0**); 
     
     if (aramaKelimeleri.length === 0) {
         onerilerDiv.style.display = 'none';
@@ -285,6 +285,13 @@ function aramaYap(aramaTerimi) {
             const kayitKelimeleri = kaynakMetinler.split(/\s+/).filter(w => w.length > 1);
             let enIyiKelimeSkoru = Infinity;
             
+            // **KRİTİK FİLTRELEME SKORU BELİRLEME**
+            let MaxSkorListeleme = 3.0;
+            // Düzeltme 3: Eğer aranan kelime çok kısaysa, listelemek için daha katı bir skor iste
+            if (arananKelime.length < 4) { 
+                MaxSkorListeleme = 1.0; // Sadece mükemmel eşleşme (skor 0) veya tek harf hatası (skor 1) kabul et
+            }
+            
             for (const kayitKelime of kayitKelimeleri) {
                 const skor = benzerlikSkoruHesapla(kayitKelime, arananKelime);
                 if (skor < enIyiKelimeSkoru) {
@@ -292,8 +299,8 @@ function aramaYap(aramaTerimi) {
                 }
             }
             
-            // Eğer en iyi skor 3'ten büyükse, bu kelimeyi eşleşmemiş say
-            if (enIyiKelimeSkoru <= 3.0) {
+            // Eğer en iyi skor belirlediğimiz eşiği aşarsa, bu kelimeyi eşleşmemiş say
+            if (enIyiKelimeSkoru <= MaxSkorListeleme) {
                 toplamSkor += enIyiKelimeSkoru;
                 eslesenKelimeSayisi++;
             } else {
@@ -352,9 +359,8 @@ function gosterOneriListesi(oneriler, aramaKelimeleri) {
                         // Sadece soru kelimesi ve aranan terim arasındaki skoru hesapla
                         const skor = benzerlikSkoruHesapla(soruKelime, arananTerim);
                         
-                        // ** DÜZELTİLMİŞ KISIM **
-                        // En fazla 1.0 Levenshtein uzaklığını bold için kabul et (Çok daha katı kural)
-                        if (skor < **1.1** && skor < enDusukSkor) { 
+                        // Düzeltme 2: Boldlama toleransını tekrar 2.1'e çıkardık. "Dolphin" örneğinde boldlama başarılı olmalı.
+                        if (skor < **2.1** && skor < enDusukSkor) { 
                             enDusukSkor = skor;
                             enIyiSoruKelime = soruKelime;
                         }
@@ -388,6 +394,7 @@ function gosterOneriListesi(oneriler, aramaKelimeleri) {
         onerilerDiv.style.display = 'none';
     }
 }
+
 
 // =================================================================
 // 5. OLAY DİNLEYİCİLERİ

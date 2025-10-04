@@ -1,45 +1,205 @@
+// =================================================================
+// 1. DOM ELEMENTLERİ VE YARDIMCI DEĞİŞKENLER
+// =================================================================
+
 // Gerekli DOM elemanlarını seçme
-    const aramaKutusu = document.getElementById('aramaKutusu');
-    const onerilerDiv = document.getElementById('oneriler');
-    const sonucAlani = document.getElementById('sonucAlani');
-    const sonucSoru = document.getElementById('sonucSoru');
-    const sonucCevap = document.getElementById('sonucCevap');
-    const sonucKategori = document.getElementById('sonucKategori');
-    const sonucEtiketler = document.getElementById('sonucEtiketler');
-    const sonucFoto = document.getElementById('sonucFoto'); 
-    const sonucVideo = document.getElementById('sonucVideo'); 
+const aramaKutusu = document.getElementById('aramaKutusu');
+const onerilerDiv = document.getElementById('oneriler');
+const sonucAlani = document.getElementById('sonucAlani');
+const sonucSoru = document.getElementById('sonucSoru');
+const sonucCevap = document.getElementById('sonucCevap');
+const sonucKategori = document.getElementById('sonucKategori');
+const sonucEtiketler = document.getElementById('sonucEtiketler');
+const sonucFoto = document.getElementById('sonucFoto'); 
+const sonucVideo = document.getElementById('sonucVideo'); 
+ 
+// HTML'de YAPILAN DEĞİŞİKLİKLERE UYGUN YENİ BELGE ALANI TANIMLAMALARI
+const sonucBelgeLink = document.getElementById('sonucBelgeLink'); 
+const sonucJPGGosterici = document.getElementById('sonucJPGGosterici'); 
+
+// Versiyon yönetimindeki HTML elementlerini seçme
+const cssLink = document.getElementById('cssLink');
+const jsScript = document.getElementById('jsScript'); 
+
+// Veri değişkenleri
+let byd_verileri = [];
+let aktifOneriIndeksi = -1;
+
+// =================================================================
+// 2. YARDIMCI FONKSİYONLAR
+// =================================================================
+
+// YARDIMCI FONKSİYON: YouTube URL'sinden Video ID'sini çeker (Tüm formatları destekler)
+function extractVideoId(url) {
+    if (!url) return null;
+    let videoId = null;
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
     
-    // HTML'de YAPILAN DEĞİŞİKLİKLERE UYGUN YENİ BELGE ALANI TANIMLAMALARI
-    // Eski: const sonucBelge = document.getElementById('sonucBelge'); ARTIK KULLANILMIYOR
-    const sonucBelgeLink = document.getElementById('sonucBelgeLink'); // Yedek linkler için
-    const sonucJPGGosterici = document.getElementById('sonucJPGGosterici'); // iFrame'ler için
-
-    // Versiyon yönetimindeki HTML elementlerini seçme
-    const cssLink = document.getElementById('cssLink');
-    const jsScript = document.getElementById('jsScript'); 
-
-    // Veri değişkenleri
-    let byd_verileri = [];
-    let aktifOneriIndeksi = -1;
-
-    // YARDIMCI FONKSİYON: YouTube URL'sinden Video ID'sini çeker (Tüm formatları destekler)
-    function extractVideoId(url) {
-        if (!url) return null;
-        let videoId = null;
-        const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/;
-        const match = url.match(regex);
-        
-        if (match && match[1]) {
-            videoId = match[1];
-        }
-        return videoId;
+    if (match && match[1]) {
+        videoId = match[1];
     }
+    return videoId;
+}
+
+/**
+ * Aranan terim ile metin arasındaki basit benzerlik skorunu hesaplar. (FUZZY MATCHING)
+ * Skor ne kadar düşükse o kadar yakındır (0 = Mükemmel Eşleşme).
+ * @param {string} aranacakMetin - Aranacak metin (Soru, Etiket, Cevap).
+ * @param {string} arananTerim - Kullanıcının girdiği terim (Örn: "lstik").
+ * @returns {number} Benzerlik skoru (0=Mükemmel Eşleşme, Infinity=Eşleşme yok).
+ */
+function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
+    if (!arananTerim || aranacakMetin === undefined) return Infinity; 
+    
+    // Metinleri temizle ve küçük harfe çevir
+    const text = aranacakMetin.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
+    const query = arananTerim.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
+
+    // 1. Mükemmel Eşleşme Skoru (Tam olarak içeriyorsa en yüksek öncelik)
+    if (text.includes(query)) {
+        // Skoru, eşleşmenin metnin neresinde başladığına göre belirle (başlangıçta olması daha iyi)
+        return text.indexOf(query) * 0.01;
+    }
+
+    // 2. Basit Yazım Hatası Toleransı (Approximate Substring Match)
+    let score = 0;
+
+    for (let i = 0; i < query.length; i++) {
+        // Karakterin aranacak metinde hiç geçmemesi büyük ceza
+        if (text.indexOf(query[i]) === -1) {
+            score += 2;
+        } else {
+            // Karakterler arası mesafeyi ve sırayı kontrol et (Sıra bozukluğu cezası)
+            const lastIndex = i > 0 ? text.indexOf(query[i - 1]) : -1;
+            const currentIndex = text.indexOf(query[i], lastIndex + 1);
+            if (currentIndex === -1) {
+                score += 1.5; 
+            } else {
+                score += (currentIndex - lastIndex) * 0.1;
+            }
+        }
+    }
+    
+    // Eğer skor çok yüksekse, alakasız kabul et
+    if (score > 5 && score > query.length * 2) {
+        return Infinity;
+    }
+    
+    // Uzunluk farkına göre skor ekle
+    score += Math.abs(text.length - query.length) * 0.5;
+
+    return score;
+}
+
+/**
+ * Seçilen verinin sonuçlarını ekranda gösteren fonksiyon
+ * @param {Object} veri - Gösterilecek veri kaydı
+ */
+function gosterSonuclari(veri) {
+    sonucAlani.style.display = 'block';
+    
+    // Soru başlığını HTML olarak ayarlayalım
+    sonucSoru.textContent = veri.soru; 
+    
+    // Cevap metnini HTML olarak ayarlayalım (TinyMCE ile gelen HTML içeriğini desteklemek için)
+    sonucCevap.innerHTML = veri.cevap; 
+    
+    sonucKategori.textContent = veri.kategori;
+    sonucEtiketler.textContent = Array.isArray(veri.etiketler) && veri.etiketler.length > 0
+                             ? veri.etiketler.join(', ')  
+                             : 'Etiket bulunmamaktadır.';
+    
+    // Belge/JPG Gösterme Mantığı
+    if(sonucJPGGosterici) sonucJPGGosterici.innerHTML = '';
+    if(sonucBelgeLink) sonucBelgeLink.innerHTML = '';
+    
+    if (veri.belge && sonucJPGGosterici && sonucBelgeLink) {
+        const sayfaNumaralari = String(veri.belge).split(',').map(s => s.trim()).filter(s => s.length > 0);
+        let JPGGostericiHTML = '';
+        
+        sayfaNumaralari.forEach(sayfaNo => {
+            const temizSayfaNo = sayfaNo.replace(/[^a-zA-Z0-9_]/g, '');
+            const JPGYolu = `/BYD_PWA_Projesi/kilavuz/kil_${temizSayfaNo}.jpg`; // YOL DÜZELTİLDİ
+            
+            JPGGostericiHTML += `
+                <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                    <h5 class="sonuc-baslik" style="background-color: #f7f7f7; padding: 10px; margin: 0; font-size: 1em; color: #333;">
+                        Kılavuz Sayfa ${sayfaNo}
+                    </h5>
+                    <iframe 
+                        src="${JPGYolu}" 
+                        style="width: 100%; height: 600px; border: none; display: block;" 
+                        frameborder="0">
+                        Bu tarayıcı iFrame'i desteklemiyor.
+                    </iframe>
+                </div>
+            `;
+
+            sonucBelgeLink.innerHTML += `
+                    <a href="${JPGYolu}" target="_blank" style="
+                        display: inline-block;
+                        margin: 5px 10px 5px 0;
+                        color: #007AFF; 
+                        font-weight: 500;">
+                        Sayfa ${sayfaNo}'yu Yeni Sekmede Aç
+                    </a>
+            `;
+        });
+        
+        sonucJPGGosterici.innerHTML = JPGGostericiHTML;
+
+    } else {
+        if (sonucJPGGosterici) {
+            sonucJPGGosterici.textContent = "İlgili kılavuz belgesi bulunmamaktadır.";
+        }
+    }
+    
+    // Fotoğraf mantığı
+    if (veri.foto) {
+        const resimSrc = veri.foto;
+        const resimHTML = `
+            <img src="${resimSrc}" alt="BYD Bilgi Görseli">`;
+        sonucFoto.innerHTML = resimHTML;
+    } else {
+        sonucFoto.innerHTML = "Görsel bulunmamaktadır.";
+    }
+    
+    // Video mantığı
+    const videoId = extractVideoId(veri.video); 
+    
+    if (videoId) {
+        const iframeHTML = `
+            <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: black; border-radius: 8px;">
+                <iframe 
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                    src="https://www.youtube.com/embed/${videoId}" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+        `;
+        sonucVideo.innerHTML = iframeHTML;
+    } else {
+        sonucVideo.innerHTML = `Video bulunmamaktadır veya link geçersizdir.`;
+    }
+    
+    // Temizlik ve Odaklanma
+    aramaKutusu.value = '';
+    aramaKutusu.focus(); 
+
+    // Sonuç alanına kaydır
+    sonucAlani.scrollIntoView({ behavior: 'smooth' });
+}
+
+// =================================================================
+// 3. VERİ YÜKLEME VE BAŞLATMA
+// =================================================================
 
 // script.js - verileriYukle fonksiyonu
 async function verileriYukle() {
     try {
-        // !!! KRİTİK DEĞİŞİKLİK BURADA !!!
-        // GitHub Pages için depo adını yola ekliyoruz
         const response = await fetch('/BYD_PWA_Projesi/data.json'); 
         
         if (!response.ok) {
@@ -49,7 +209,7 @@ async function verileriYukle() {
         
         const tamVeri = await response.json();
         
-        // 1. VERSİYON KONTROLÜ VE UYGULAMASI (Önbellek aşımı için)
+        // 1. VERSİYON KONTROLÜ VE UYGULAMASI
         if (tamVeri.versiyon && cssLink) {
             const versiyon = tamVeri.versiyon;
             cssLink.href = `style.css?v=${versiyon}`;
@@ -69,203 +229,175 @@ async function verileriYukle() {
     }
 }
 
-    // Sayfa yüklendiğinde verileri çek
-    verileriYukle();
-    
-    // Seçilen verinin sonuçlarını ekranda gösteren fonksiyon
-    function gosterSonuclari(veri) {
-        sonucAlani.style.display = 'block';
-        sonucCevap.innerHTML = veri.cevap;
-        sonucCevap.textContent = veri.cevap;
-        
-        sonucKategori.textContent = veri.kategori;
-		sonucEtiketler.textContent = Array.isArray(veri.etiketler) && veri.etiketler.length > 0
-                             ? veri.etiketler.join(', ') 
-                             : 'Etiket bulunmamaktadır.';
-        
-        // **JPG GÖSTERME MANTIĞI (iFrame ENTEGRASYONU)**
-        
-        // Her çağrıda önceki içeriği temizle
-        if(sonucJPGGosterici) sonucJPGGosterici.innerHTML = '';
-        if(sonucBelgeLink) sonucBelgeLink.innerHTML = '';
-        
-        if (veri.belge && sonucJPGGosterici && sonucBelgeLink) {
-            const sayfaNumaralari = String(veri.belge).split(',').map(s => s.trim()).filter(s => s.length > 0);
-            
-            let JPGGostericiHTML = '';
-            
-            sayfaNumaralari.forEach(sayfaNo => {
-                const temizSayfaNo = sayfaNo.replace(/[^a-zA-Z0-9_]/g, '');
-                const JPGYolu = `kilavuz/kil_${temizSayfaNo}.jpg`;
-                
-                // Her sayfa için ayrı bir iFrame oluştur
-                JPGGostericiHTML += `
-                    <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-                        <h5 style="background-color: #f7f7f7; padding: 10px; margin: 0; font-size: 1em; color: #333;">
-                            Kılavuz Sayfa ${sayfaNo}
-                        </h5>
-                        <iframe 
-                            src="${JPGYolu}" 
-                            style="width: 100%; height: 600px; border: none; display: block;" 
-                            frameborder="0">
-                            Bu tarayıcı iFrame'i desteklemiyor.
-                        </iframe>
-                    </div>
-                `;
+// Sayfa yüklendiğinde verileri çek
+verileriYukle();
 
-                // Yedek bağlantıları oluşturma (iFrame başarısız olursa)
-                sonucBelgeLink.innerHTML += `
-                     <a href="${JPGYolu}" target="_blank" style="
-                        display: inline-block;
-                        margin: 5px 10px 5px 0;
-                        color: #007AFF; 
-                        font-weight: 500;">
-                        Sayfa ${sayfaNo}'yu Yeni Sekmede Aç
-                    </a>
-                `;
-            });
-            
-            sonucJPGGosterici.innerHTML = JPGGostericiHTML;
+// =================================================================
+// 4. GELİŞMİŞ ARAMA (FUZZY MATCHING) MANTIĞI
+// =================================================================
 
-        } else {
-            // Eğer veri yoksa veya HTML elementleri bulunamazsa mesaj göster
-            if (sonucJPGGosterici) {
-                sonucJPGGosterici.textContent = "İlgili kılavuz belgesi bulunmamaktadır.";
-            }
-        }
-        
-        // Fotoğraf mantığı
-        if (veri.foto) {
-            const resimSrc = veri.foto;
-            const resimHTML = `
-                <img src="${resimSrc}" alt="BYD Bilgi Görseli" style="
-                    width: 100%; 
-                    height: auto; 
-                    display: block; 
-                    border-radius: 8px; 
-                    margin-top: 10px; 
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);"
-                >`;
-            sonucFoto.innerHTML = resimHTML;
-        } else {
-            sonucFoto.innerHTML = "Görsel bulunmamaktadır.";
-        }
-        
-        // Video mantığı
-        const videoId = extractVideoId(veri.video); 
-        
-        if (videoId) {
-            const iframeHTML = `
-                <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: black; border-radius: 8px;">
-                    <iframe 
-                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
-                        src="https://www.youtube.com/embed/${videoId}" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
-            `;
-            sonucVideo.innerHTML = iframeHTML;
-        } else {
-            sonucVideo.innerHTML = `Video bulunmamaktadır veya link geçersizdir.`;
-        }
-        
-        // Sonuçlar gösterildikten hemen sonra arama kutusunu temizle
-        aramaKutusu.value = '';
-        aramaKutusu.focus(); // Yeni arama yapmaya hazır olması için odaklan
-
-        // Sonuç alanına kaydır
-        sonucAlani.scrollIntoView({ behavior: 'smooth' });
+/**
+ * Ana arama/öneri motoru fonksiyonu. Fuzzy matching ve skorlamayı uygular.
+ */
+function aramaYap(aramaTerimi) {
+    // Arama terimi yoksa veya çok kısaysa önerileri gizle
+    if (aramaTerimi.length < 2) {
+        onerilerDiv.style.display = 'none';
+        aktifOneriIndeksi = -1;
+        return;
     }
 
-    // SUGGEST FONKSİYONU: Arama ve Öneri Mantığı
-    aramaKutusu.addEventListener('input', function() {
-        const inputDegeri = aramaKutusu.value.toLowerCase().trim();
+    const terim = aramaTerimi.toLowerCase().trim();
+    const bulunanSonuclar = [];
+
+    if (!byd_verileri || byd_verileri.length === 0) return; 
+
+    byd_verileri.forEach((kayit, index) => {
+        let skor = Infinity;
+
+        // Bütün metinleri (Soru, Kategori, Etiketler) tek bir dizeye dönüştürün
+        const kaynakMetinler = [
+            kayit.soru,
+            kayit.kategori,
+            (Array.isArray(kayit.etiketler) ? kayit.etiketler.join(' ') : kayit.etiketler)
+        ].join(' '); 
+
+        // 1. Öncelikli Alanlarda (Soru, Etiket) Skorlama
+        skor = benzerlikSkoruHesapla(kaynakMetinler, terim);
         
-        // Öneri alanını temizle ve aktif indeksi sıfırla
-        onerilerDiv.innerHTML = '';
-        aktifOneriIndeksi = -1;
-        
-        // Gerekli kontrol
-        if (inputDegeri.length < 2) {
-            return;
+        // 2. Cevap Metni Eşleşmeleri (Daha Düşük Öncelik)
+        // Eğer skor hala yüksekse (öncelikli alanda iyi bir eşleşme bulunmadıysa) cevap metnine bak
+        if (skor >= 1.5) { // İyi bir tam eşleşme yoksa (skor 1.5'ten büyükse)
+            const cevapSkoru = benzerlikSkoruHesapla(kayit.cevap, terim);
+            
+            // Cevap metnindeki eşleşmenin skorunu daha düşük öncelikli hale getir (örn: 3 ekleyerek)
+            if (cevapSkoru !== Infinity) {
+                // Öncelikli alanlardaki skordan daha iyi değilse bile, bir sonuç olarak kalsın
+                skor = Math.min(skor, cevapSkoru + 3); 
+            }
         }
 
-        // FİLTRELEME: Soru Cümlesinde VEYA Etiketlerde Eşleşme
-        const eslesenler = byd_verileri.filter(veri => 
-    	veri.soru.toLowerCase().includes(inputDegeri) ||
-    	(Array.isArray(veri.etiketler) && veri.etiketler.some(etiket => etiket.toLowerCase().includes(inputDegeri)))
-		);
+        // Geçerli bir skor varsa listeye ekle
+        if (skor !== Infinity) {
+            bulunanSonuclar.push({
+                ...kayit,
+                skor: skor,
+                index: index // Klavye gezintisi için orijinal indeksi sakla
+            });
+        }
+    });
 
-        eslesenler.forEach(veri => {
+    // Skora göre sırala (Düşük skor = Daha iyi eşleşme)
+    bulunanSonuclar.sort((a, b) => a.skor - b.skor);
+
+    // İlk 10 sonucu al
+    const oneriler = bulunanSonuclar.slice(0, 10);
+    
+    // Öneri listesini güncelle
+    gosterOneriListesi(oneriler);
+}
+
+/**
+ * Öneri listesi HTML'ini oluşturur ve gösterir.
+ * @param {Array<Object>} oneriler - Skorlanmış ve sıralanmış kayıtlar dizisi
+ */
+function gosterOneriListesi(oneriler) {
+    onerilerDiv.innerHTML = '';
+    aktifOneriIndeksi = -1;
+    
+    if (oneriler.length > 0) {
+        const aramaTerimi = aramaKutusu.value.trim();
+        
+        oneriler.forEach((kayit, listIndex) => {
             const oneriItem = document.createElement('div');
             oneriItem.classList.add('oneri-item');
             
-            // Vurgulama
-            const vurgulanmisSoru = veri.soru.replace(
-                new RegExp(inputDegeri, "gi"),
-                (eslesen) => `<b>${eslesen}</b>`
-            );
+            // 1. Vurgulama
+            const regex = new RegExp(`(${aramaTerimi})`, 'gi');
+            const vurgulanmisSoru = kayit.soru.replace(regex, '<b>$1</b>');
             
-            // Öneriye kategori bilgisini ekle
-            oneriItem.innerHTML = `${vurgulanmisSoru} <span style="font-size: 0.8em; color: #999;">(${veri.kategori})</span>`;
+            // 2. Öneriye kategori bilgisini ve skoru ekle (Skoru sadece geliştirme için görebiliriz)
+            oneriItem.innerHTML = `${vurgulanmisSoru} <span style="font-size: 0.8em; color: #999;">(${kayit.kategori})</span>`;
             
-            // Mouse tıklama olayı
+            // 3. Veri indeksini klavye gezintisi için sakla
+            oneriItem.dataset.veriIndeksi = kayit.index; 
+
+            // 4. Mouse tıklama olayı
             oneriItem.addEventListener('click', function() {
-                aramaKutusu.value = veri.soru; 
-                onerilerDiv.innerHTML = '';
-                gosterSonuclari(veri);
+                aramaKutusu.value = kayit.soru; 
+                onerilerDiv.style.display = 'none';
+                gosterSonuclari(kayit);
             });
             
-            oneriItem.dataset.veriIndeksi = byd_verileri.indexOf(veri);
-
-            // Hata Düzeltmesi: oneriItem'ı ekle
+            // 5. Listeye ekle
             onerilerDiv.appendChild(oneriItem);
         });
-    });
+        
+        onerilerDiv.style.display = 'block';
+    } else {
+        // Eşleşme yoksa gizle
+        onerilerDiv.style.display = 'none';
+    }
+}
 
-    // KLAVYE GEZİNTİSİ: Ok tuşları (Up/Down) ve Enter tuşu olaylarını yönetme
-    aramaKutusu.addEventListener('keydown', function(e) {
-        const oneriler = onerilerDiv.getElementsByClassName('oneri-item');
-        if (oneriler.length === 0) return;
 
-        function secimiTemizle() {
-            Array.from(oneriler).forEach(item => item.classList.remove('aktif-oneri'));
-        }
+// =================================================================
+// 5. OLAY DİNLEYİCİLERİ
+// =================================================================
 
-        if (e.key === 'ArrowDown') {
+// 1. INPUT OLAYI: Her tuşa basıldığında arama yap
+aramaKutusu.addEventListener('input', function() {
+    aramaYap(aramaKutusu.value);
+});
+
+// 2. KLAVYE GEZİNTİSİ: Ok tuşları (Up/Down) ve Enter tuşu olaylarını yönetme
+aramaKutusu.addEventListener('keydown', function(e) {
+    const oneriler = onerilerDiv.getElementsByClassName('oneri-item');
+    if (oneriler.length === 0) return;
+
+    function secimiTemizle() {
+        Array.from(oneriler).forEach(item => item.classList.remove('aktif-oneri'));
+    }
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault(); 
+        secimiTemizle();
+        aktifOneriIndeksi = (aktifOneriIndeksi + 1) % oneriler.length;
+        oneriler[aktifOneriIndeksi].classList.add('aktif-oneri');
+        
+        // Kutudaki değeri seçilen önerinin sorusu ile güncelle
+        const veriIndeksi = parseInt(oneriler[aktifOneriIndeksi].dataset.veriIndeksi);
+        aramaKutusu.value = byd_verileri[veriIndeksi].soru;
+
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault(); 
+        secimiTemizle();
+        aktifOneriIndeksi = (aktifOneriIndeksi - 1 + oneriler.length) % oneriler.length;
+        oneriler[aktifOneriIndeksi].classList.add('aktif-oneri');
+        
+        // Kutudaki değeri seçilen önerinin sorusu ile güncelle
+        const veriIndeksi = parseInt(oneriler[aktifOneriIndeksi].dataset.veriIndeksi);
+        aramaKutusu.value = byd_verileri[veriIndeksi].soru;
+
+    } else if (e.key === 'Enter') {
+        if (aktifOneriIndeksi > -1) {
             e.preventDefault(); 
-            secimiTemizle();
-            aktifOneriIndeksi = (aktifOneriIndeksi + 1) % oneriler.length;
-            oneriler[aktifOneriIndeksi].classList.add('aktif-oneri');
-            aramaKutusu.value = byd_verileri[parseInt(oneriler[aktifOneriIndeksi].dataset.veriIndeksi)].soru;
-
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault(); 
-            secimiTemizle();
-            aktifOneriIndeksi = (aktifOneriIndeksi - 1 + oneriler.length) % oneriler.length;
-            oneriler[aktifOneriIndeksi].classList.add('aktif-oneri');
-            aramaKutusu.value = byd_verileri[parseInt(oneriler[aktifOneriIndeksi].dataset.veriIndeksi)].soru;
-
-        } else if (e.key === 'Enter') {
-            if (aktifOneriIndeksi > -1) {
-                e.preventDefault(); 
-                
-                const secilenItem = oneriler[aktifOneriIndeksi];
-                const veriIndeksi = parseInt(secilenItem.dataset.veriIndeksi);
-                
-                onerilerDiv.innerHTML = '';
-                aktifOneriIndeksi = -1;
-                gosterSonuclari(byd_verileri[veriIndeksi]);
-            }
-        }
-    });
-    
-    // Kutudan çıkıldığında önerileri gizle
-    aramaKutusu.addEventListener('blur', function() {
-        setTimeout(() => {
-            onerilerDiv.innerHTML = '';
+            
+            const secilenItem = oneriler[aktifOneriIndeksi];
+            const veriIndeksi = parseInt(secilenItem.dataset.veriIndeksi);
+            
+            onerilerDiv.style.display = 'none'; // Önerileri gizle
             aktifOneriIndeksi = -1;
-        }, 150); 
-    });
+            gosterSonuclari(byd_verileri[veriIndeksi]);
+        }
+    }
+});
+    
+// 3. Kutudan çıkıldığında önerileri gizle
+aramaKutusu.addEventListener('blur', function() {
+    // Tıklama olayının tetiklenmesi için küçük bir gecikme ekle
+    setTimeout(() => {
+        onerilerDiv.style.display = 'none';
+        aktifOneriIndeksi = -1;
+    }, 150); 
+});

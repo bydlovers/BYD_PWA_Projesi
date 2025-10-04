@@ -312,11 +312,44 @@ function gosterOneriListesi(oneriler) {
             const oneriItem = document.createElement('div');
             oneriItem.classList.add('oneri-item');
             
-            // 1. Vurgulama
-            const regex = new RegExp(`(${aramaTerimi})`, 'gi');
-            const vurgulanmisSoru = kayit.soru.replace(regex, '<b>$1</b>');
+            // 1. Vurgulama Mantığı (Fuzzy Matching için geliştirildi)
+            let vurgulanmisSoru = kayit.soru;
             
-            // 2. Öneriye kategori bilgisini ve skoru ekle (Skoru sadece geliştirme için görebiliriz)
+            if (aramaTerimi.length >= 2) {
+                
+                // Kaydın tüm anahtar kelimelerini ayır
+                const tumKelimeler = [
+                    ...kayit.soru.toLowerCase().split(/\s+/), 
+                    ...kayit.kategori.toLowerCase().split(/\s+/), 
+                    ...(Array.isArray(kayit.etiketler) ? kayit.etiketler.map(e => e.toLowerCase()) : [])
+                ];
+                
+                let enIyiEslesme = '';
+                let enDusukSkor = Infinity;
+                
+                // Tüm kelimeler arasında arama terimiyle en yakın olanı bul
+                tumKelimeler.forEach(kelime => {
+                    const skor = benzerlikSkoruHesapla(kelime, aramaTerimi);
+                    // Sadece çok yakın eşleşmeleri dikkate al (skor 2.0'dan küçük)
+                    if (skor < 2.0 && skor < enDusukSkor) {
+                        enDusukSkor = skor;
+                        enIyiEslesme = kelime;
+                    }
+                });
+
+                // Eğer tatmin edici bir kelime bulunduysa, o kelimeyi vurgula
+                if (enIyiEslesme) {
+                    // Kayıttaki orijinal kelimeyi (büyük/küçük harf duyarlı) bulmak için RegExp kullanılır
+                    const regex = new RegExp(`(${enIyiEslesme})`, 'gi');
+                    vurgulanmisSoru = kayit.soru.replace(regex, '<b>$1</b>');
+                } else {
+                    // Eğer fuzzy match çok zayıfsa, yine de kullanıcının tam girdiği terimi vurgulamayı dene
+                    const regex = new RegExp(`(${aramaTerimi})`, 'gi');
+                    vurgulanmisSoru = kayit.soru.replace(regex, '<b>$1</b>');
+                }
+            }
+            
+            // 2. Öneriye kategori bilgisini ekle
             oneriItem.innerHTML = `${vurgulanmisSoru} <span style="font-size: 0.8em; color: #999;">(${kayit.kategori})</span>`;
             
             // 3. Veri indeksini klavye gezintisi için sakla
@@ -339,7 +372,6 @@ function gosterOneriListesi(oneriler) {
         onerilerDiv.style.display = 'none';
     }
 }
-
 
 // =================================================================
 // 5. OLAY DİNLEYİCİLERİ

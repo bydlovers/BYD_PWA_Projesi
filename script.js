@@ -42,57 +42,54 @@ function extractVideoId(url) {
     return videoId;
 }
 
+
 /**
  * Aranan terim ile metin arasındaki basit benzerlik skorunu hesaplar. (FUZZY MATCHING)
- * Skor ne kadar düşükse o kadar yakındır (0 = Mükemmel Eşleşme).
- * @param {string} aranacakMetin - Aranacak metin (Soru, Etiket, Cevap).
- * @param {string} arananTerim - Kullanıcının girdiği terim (Örn: "lstik").
  * @returns {number} Benzerlik skoru (0=Mükemmel Eşleşme, Infinity=Eşleşme yok).
  */
 function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
     if (!arananTerim || aranacakMetin === undefined) return Infinity; 
     
-    // Metinleri temizle ve küçük harfe çevir
     const text = aranacakMetin.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
     const query = arananTerim.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
 
-    // Eğer arama terimi çok kısaysa ve metin çok uzunsa alakasız say
-    if (query.length < 3 && text.length > 10) return Infinity;
+    // Eğer arama terimi çok kısaysa (2 veya 3 harf) ve metin çok uzunsa alakasız say.
+    // Bu, "a" veya "by" gibi aramaların gereksiz sonuç getirmesini engeller.
+    if (query.length <= 3 && text.length > 20 && !text.includes(query)) return Infinity; 
 
 
-    // 1. Mükemmel Eşleşme Skoru (Tam olarak içeriyorsa en yüksek öncelik)
+    // 1. Mükemmel Eşleşme Skoru
     if (text.includes(query)) {
-        // Skoru, eşleşmenin metnin neresinde başladığına göre belirle (başlangıçta olması daha iyi)
         return text.indexOf(query) * 0.01;
     }
 
-    // 2. Basit Yazım Hatası Toleransı (Approximate Substring Match)
+    // 2. Basit Yazım Hatası Toleransı
     let score = 0;
 
     for (let i = 0; i < query.length; i++) {
         // Karakterin aranacak metinde hiç geçmemesi büyük ceza
         if (text.indexOf(query[i]) === -1) {
-            score += 2;
+            score += 2.5; // Ceza artırıldı (2.0'dan 2.5'e)
         } else {
-            // Karakterler arası mesafeyi ve sırayı kontrol et (Sıra bozukluğu cezası)
+            // Karakterler arası mesafeyi ve sırayı kontrol et
             const lastIndex = i > 0 ? text.indexOf(query[i - 1]) : -1;
             const currentIndex = text.indexOf(query[i], lastIndex + 1);
             if (currentIndex === -1) {
-                score += 1.5; 
+                score += 2.0; // Sıra bozukluğu cezası artırıldı (1.5'ten 2.0'a)
             } else {
                 score += (currentIndex - lastIndex) * 0.1;
             }
         }
     }
     
-    // Eğer skor çok yüksekse, alakasız kabul et
-    if (score > 5 && score > query.length * 2) {
+    // Yüksek Skor Reddi: Eğer skor hala çok yüksekse (çok fazla hata varsa), eşleşme yok say.
+    // Arama terimi uzunluğunun 1.5 katından büyükse alakasızdır.
+    if (score > query.length * 1.5) {
         return Infinity;
     }
     
-    // ⚠️ KRİTİK AYARLAMA: Uzunluk farkı cezasını düşürüyoruz. 
-    // Bu, "stat" ve "start" gibi 1 harf eksik/fazla olan kısa kelimelerin kurtarılmasına yardımcı olur.
-    score += Math.abs(text.length - query.length) * 0.2; // 0.5 yerine 0.2 kullanıldı
+    // Uzunluk farkı cezası
+    score += Math.abs(text.length - query.length) * 0.2;
 
     return score;
 }
@@ -240,7 +237,6 @@ verileriYukle();
 // =================================================================
 // 4. GELİŞMİŞ ARAMA (FUZZY MATCHING) MANTIĞI
 // =================================================================
-
 /**
  * Ana arama/öneri motoru fonksiyonu. Fuzzy matching ve skorlamayı uygular.
  */
@@ -254,6 +250,8 @@ function aramaYap(aramaTerimi) {
 
     const terim = aramaTerimi.toLowerCase().trim();
     const bulunanSonuclar = [];
+    const MAX_ONERI_SKORU = terim.length > 5 ? 4.0 : 3.0; // Uzun terimler için daha esnek ol
+
 
     if (!byd_verileri || byd_verileri.length === 0) return; 
 
@@ -271,34 +269,30 @@ function aramaYap(aramaTerimi) {
         skor = benzerlikSkoruHesapla(kaynakMetinler, terim);
         
         // 2. Cevap Metni Eşleşmeleri (Daha Düşük Öncelik)
-        // Eğer skor hala yüksekse (öncelikli alanda iyi bir eşleşme bulunmadıysa) cevap metnine bak
-        if (skor >= 1.5) { // İyi bir tam eşleşme yoksa (skor 1.5'ten büyükse)
+        if (skor >= MAX_ONERI_SKORU * 0.5) { // İyi bir öncelikli eşleşme yoksa (Skor yarısından büyükse)
             const cevapSkoru = benzerlikSkoruHesapla(kayit.cevap, terim);
             
-            // Cevap metnindeki eşleşmenin skorunu daha düşük öncelikli hale getir (örn: 3 ekleyerek)
+            // Cevap skorunu öncelikli alan skoruna ekle (daha düşük öncelik için)
             if (cevapSkoru !== Infinity) {
-                // Öncelikli alanlardaki skordan daha iyi değilse bile, bir sonuç olarak kalsın
-                skor = Math.min(skor, cevapSkoru + 3); 
+                skor = Math.min(skor, cevapSkoru + 4); // 4 puan ceza ekleyerek önceliğini düşür
             }
         }
-
-        // Geçerli bir skor varsa listeye ekle
-        if (skor !== Infinity) {
+        
+        // ⚠️ KRİTİK FİLTRELEME: Belirlenen eşiğin altındaysa listeye ekle
+        if (skor !== Infinity && skor < MAX_ONERI_SKORU) {
             bulunanSonuclar.push({
                 ...kayit,
                 skor: skor,
-                index: index // Klavye gezintisi için orijinal indeksi sakla
+                index: index 
             });
         }
     });
 
-    // Skora göre sırala (Düşük skor = Daha iyi eşleşme)
+    // Skora göre sırala
     bulunanSonuclar.sort((a, b) => a.skor - b.skor);
 
-    // İlk 10 sonucu al
+    // İlk 10 sonucu al ve öneri listesini güncelle
     const oneriler = bulunanSonuclar.slice(0, 10);
-    
-    // Öneri listesini güncelle
     gosterOneriListesi(oneriler);
 }
 

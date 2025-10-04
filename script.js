@@ -45,6 +45,9 @@ function extractVideoId(url) {
 
 /**
  * Aranan terim ile metin arasındaki basit benzerlik skorunu hesaplar. (FUZZY MATCHING)
+ * SKOR NE KADAR DÜŞÜKSE O KADAR İYİDİR. (0 = Mükemmel Eşleşme)
+ * @param {string} aranacakMetin - Aranacak metin (Soru, Etiket, Cevap).
+ * @param {string} arananTerim - Kullanıcının girdiği terim (Örn: "lstik").
  * @returns {number} Benzerlik skoru (0=Mükemmel Eşleşme, Infinity=Eşleşme yok).
  */
 function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
@@ -53,8 +56,7 @@ function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
     const text = aranacakMetin.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
     const query = arananTerim.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
 
-    // Eğer arama terimi çok kısaysa (2 veya 3 harf) ve metin çok uzunsa alakasız say.
-    // Bu, "a" veya "by" gibi aramaların gereksiz sonuç getirmesini engeller.
+    // Kısa terim ve uzun metin kontrolü (Alakasız sonuçları elemek için)
     if (query.length <= 3 && text.length > 20 && !text.includes(query)) return Infinity; 
 
 
@@ -63,41 +65,38 @@ function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
         return text.indexOf(query) * 0.01;
     }
 
-    // 2. Basit Yazım Hatası Toleransı
+    // 2. Basit Yazım Hatası Toleransı (Approximate Substring Match)
     let score = 0;
 
     for (let i = 0; i < query.length; i++) {
-        // Karakterin aranacak metinde hiç geçmemesi büyük ceza
+        // Karakterin aranacak metinde hiç geçmemesi cezası (2.5 -> 2.0 düşürüldü)
         if (text.indexOf(query[i]) === -1) {
-            score += 2.5; // Ceza artırıldı (2.0'dan 2.5'e)
+            score += 2.0; 
         } else {
             // Karakterler arası mesafeyi ve sırayı kontrol et
             const lastIndex = i > 0 ? text.indexOf(query[i - 1]) : -1;
             const currentIndex = text.indexOf(query[i], lastIndex + 1);
+            
+            // Sıra bozukluğu cezası (2.0 -> 1.0 düşürüldü)
             if (currentIndex === -1) {
-                score += 2.0; // Sıra bozukluğu cezası artırıldı (1.5'ten 2.0'a)
+                score += 1.0; 
             } else {
                 score += (currentIndex - lastIndex) * 0.1;
             }
         }
     }
     
-    // Yüksek Skor Reddi: Eğer skor hala çok yüksekse (çok fazla hata varsa), eşleşme yok say.
-    // Arama terimi uzunluğunun 1.5 katından büyükse alakasızdır.
+    // Yüksek Skor Reddi: Çok fazla hata varsa (terim uzunluğunun 1.5 katından büyükse alakasızdır.)
     if (score > query.length * 1.5) {
         return Infinity;
     }
     
-    // Uzunluk farkı cezası
-    score += Math.abs(text.length - query.length) * 0.2;
+    // ⚠️ KRİTİK DEĞİŞİKLİK: Uzunluk farkı cezasını 0.2'den 0.1'e düşürdük. 
+    // Bu, "Lstik" (4) ve "Lastik" (5) arasındaki 1 karakterlik farkın skoru patlatmasını engeller.
+    score += Math.abs(text.length - query.length) * 0.1;
 
     return score;
 }
-
-/**
- * Seçilen verinin sonuçlarını ekranda gösteren fonksiyon
- * @param {Object} veri - Gösterilecek veri kaydı
- */
 function gosterSonuclari(veri) {
     sonucAlani.style.display = 'block';
     

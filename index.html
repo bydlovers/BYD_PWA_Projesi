@@ -57,11 +57,8 @@
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        // UYARI: 'byd-destek-pwa' DEPO ADINIZDIR. Lütfen bu adı doğru kullanın.
-        const repoName = '/BYD_PWA_Projesi/'; 
-
-        // Service Worker'ı ve kapsama alanını (scope) depo adıyla birlikte kaydediyoruz.
-        navigator.serviceWorker.register(repoName + 'service-worker.js', {scope: repoName})
+         const repoName = '/BYD_PWA_Projesi/'; 
+         navigator.serviceWorker.register(repoName + 'service-worker.js', {scope: repoName})
             .then(registration => {
                 console.log('ServiceWorker kaydı başarılı. Kapsam:', registration.scope);
             })

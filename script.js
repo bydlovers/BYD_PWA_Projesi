@@ -333,4 +333,117 @@ function gosterOneriListesi(oneriler, aramaKelimeleri) {
     if (oneriler.length > 0) {
         
         oneriler.forEach((kayit, listIndex) => {
-            const oneri
+            const oneriItem = document.createElement('div');
+            oneriItem.classList.add('oneri-item');
+            
+            let vurgulanmisSoru = kayit.soru;
+            
+            // Vurgulama Mantığı: Her bir arama kelimesine en yakın kayıttaki kelimeyi bul ve bold yap
+            if (aramaKelimeleri && aramaKelimeleri.length > 0) {
+                
+                // Kaydın soru kelimelerini al
+                const soruKelimeleri = kayit.soru.split(/\s+/).filter(w => w.length > 0);
+                
+                aramaKelimeleri.forEach(arananTerim => {
+                    let enIyiSoruKelime = '';
+                    let enDusukSkor = Infinity;
+                    
+                    // Soru kelimeleri arasında arama terimiyle en yakın olanı bul
+                    soruKelimeleri.forEach(soruKelime => {
+                        // Sadece soru kelimesi ve aranan terim arasındaki skoru hesapla
+                        const skor = benzerlikSkoruHesapla(soruKelime, arananTerim);
+                        
+                        // En fazla 2.0 Levenshtein uzaklığını bold için kabul et
+                        if (skor < 2.1 && skor < enDusukSkor) { 
+                            enDusukSkor = skor;
+                            enIyiSoruKelime = soruKelime;
+                        }
+                    });
+
+                    // Eğer tatmin edici bir kelime bulunduysa, o kelimeyi vurgula
+                    if (enIyiSoruKelime) {
+                        // Vurgulama işlemi (büyük/küçük harf duyarsız, sadece tam kelime)
+                        const regex = new RegExp(`\\b(${enIyiSoruKelime})\\b`, 'gi');
+                        vurgulanmisSoru = vurgulanmisSoru.replace(regex, '<b>$1</b>');
+                    }
+                });
+            }
+            
+            // Öneriye kategori bilgisini ekle
+            oneriItem.innerHTML = `${vurgulanmisSoru} <span style="font-size: 0.8em; color: #999;">(${kayit.kategori})</span>`;
+            
+            oneriItem.dataset.veriIndeksi = kayit.index; 
+
+            oneriItem.addEventListener('click', function() {
+                aramaKutusu.value = kayit.soru; 
+                onerilerDiv.style.display = 'none';
+                gosterSonuclari(kayit);
+            });
+            
+            onerilerDiv.appendChild(oneriItem);
+        });
+        
+        onerilerDiv.style.display = 'block';
+    } else {
+        onerilerDiv.style.display = 'none';
+    }
+}
+
+// =================================================================
+// 5. OLAY DİNLEYİCİLERİ
+// =================================================================
+
+// 1. INPUT OLAYI: Her tuşa basıldığında arama yap
+aramaKutusu.addEventListener('input', function() {
+    aramaYap(aramaKutusu.value);
+});
+
+// 2. KLAVYE GEZİNTİSİ: Ok tuşları (Up/Down) ve Enter tuşu olaylarını yönetme
+aramaKutusu.addEventListener('keydown', function(e) {
+    const oneriler = onerilerDiv.getElementsByClassName('oneri-item');
+    if (oneriler.length === 0) return;
+
+    function secimiTemizle() {
+        Array.from(oneriler).forEach(item => item.classList.remove('aktif-oneri'));
+    }
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault(); 
+        secimiTemizle();
+        aktifOneriIndeksi = (aktifOneriIndeksi + 1) % oneriler.length;
+        oneriler[aktifOneriIndeksi].classList.add('aktif-oneri');
+        
+        const veriIndeksi = parseInt(oneriler[aktifOneriIndeksi].dataset.veriIndeksi);
+        aramaKutusu.value = byd_verileri[veriIndeksi].soru;
+
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault(); 
+        secimiTemizle();
+        aktifOneriIndeksi = (aktifOneriIndeksi - 1 + oneriler.length) % oneriler.length;
+        oneriler[aktifOneriIndeksi].classList.add('aktif-oneri');
+        
+        const veriIndeksi = parseInt(oneriler[aktifOneriIndeksi].dataset.veriIndeksi);
+        aramaKutusu.value = byd_verileri[veriIndeksi].soru;
+
+    } else if (e.key === 'Enter') {
+        if (aktifOneriIndeksi > -1) {
+            e.preventDefault(); 
+            
+            const secilenItem = oneriler[aktifOneriIndeksi];
+            const veriIndeksi = parseInt(secilenItem.dataset.veriIndeksi);
+            
+            onerilerDiv.style.display = 'none'; 
+            aktifOneriIndeksi = -1;
+            gosterSonuclari(byd_verileri[veriIndeksi]);
+        }
+    }
+});
+    
+// 3. Kutudan çıkıldığında önerileri gizle
+aramaKutusu.addEventListener('blur', function() {
+    // Tıklama olayının tetiklenmesi için küçük bir gecikme ekle
+    setTimeout(() => {
+        onerilerDiv.style.display = 'none';
+        aktifOneriIndeksi = -1;
+    }, 150); 
+});

@@ -127,7 +127,7 @@ h1 {
 
 /* Soru Başlığı */
 #sonucSoru {
-    font-size: 1.6em; /* Daha büyük ve belirgin */
+    font-size: 1em; /* Daha büyük ve belirgin */
     color: #007AFF; 
     font-weight: 700;
     display: block;

@@ -1,12 +1,12 @@
 {
-    "versiyon": "1.3.5",
+    "versiyon": "1.3.6",
     "veriler": [
         {
             "soru": "Bagaj kapatma butonu nasıl çalışıyor? Bagajı buton ile kapatamıyorum.",
             "cevap": "Bagaj açma butonunu çekince bagaj açılır, basılı turunca kapatır.",
             "kategori": "DM-i",
             "etiketler": [
-                "Bagaj",
+                "Bagaj,Lastik",
                 "buton"
             ],
             "foto": "",

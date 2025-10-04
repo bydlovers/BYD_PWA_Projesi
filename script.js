@@ -94,38 +94,34 @@ function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
     const text = aranacakMetin.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
     const query = arananTerim.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
 
-    // 1. Eğer arama metni, aranan terimi içeriyorsa (Mükemmel eşleşme/Substring)
+    // 1. Mükemmel eşleşme/Substring önceliği
     if (text.includes(query)) {
-        // Skoru, eşleşmenin başlangıç konumuna göre belirle (başta olması önemli)
         return text.indexOf(query) * 0.01;
     }
 
     // 2. Levenshtein Uzaklığını Hesapla
     const uzaklik = levenshteinUzakligiHesapla(text, query);
     
-    // Yüksek uzaklık reddi (Çok büyük metinlerde alakasız eşleşmeleri engeller)
-    if (uzaklik > 3) {
-         // Uzaklık 3'ten fazlaysa, büyük ihtimalle alakasızdır.
-         // Kısa kelimelerde (4-5 harf) bile 2'den fazla hata çok fazladır.
+    // Kısa kelimelerde (uzaklık 2'den küçükse) sadece uzaklığı döndür.
+    // Bu, "lstik" ve "lastik" skorunun 1 olmasını sağlar.
+    if (uzaklik <= 2) {
+        return uzaklik;
+    }
+    
+    // Uzaklık 2'den büyükse, kelime uzunluğu 6'dan kısaysa alakasız kabul et.
+    if (text.length < 6 && uzaklik > 1) {
         return Infinity;
     }
-    
-    // 3. Normalized Score (Skoru metin uzunluğuna göre ayarlıyoruz)
-    // Uzaklık skoru + kelime uzunluğu farkının bir kısmı.
+
+    // Uzun kelimeler için normalize edilmiş skoru kullan
     let score = uzaklik;
+    score += Math.abs(text.length - query.length) * 0.2; // Uzunluk farkı cezası
 
-    // Normalizasyon cezası: Uzunluk farkının yarısını skora ekle.
-    // Bu, "araba" (5) ve "ar" (2) gibi kelimelerin skoru yükseltmesini sağlar.
-    score += Math.abs(text.length - query.length) * 0.5;
-
-
-    // 4. Son Kontrol: Uzaklık 1 veya 2 ise (typo), uzunluk farkını daha az cezalandır.
-    if (uzaklik <= 2) {
-        // Eğer Levenshtein uzaklığı düşükse, sadece Levenshtein'ı baz al.
-        score = uzaklik; 
+    // Eğer uzaklık 3 veya daha fazlaysa ve kelimeler birbirine benzemiyorsa reddet
+    if (score > 3.0) {
+        return Infinity;
     }
-    
-    // Levenshtein uzaklığı $1$ olan kelimelerin skoru $1.0$'dır.
+
     return score;
 }
 
@@ -279,12 +275,12 @@ function aramaYap(aramaTerimi) {
         return;
     }
 
-    const terim = aramaTerimi.toLowerCase().trim();
-    const bulunanSonuclar = [];
-	const MAX_ONERI_SKORU = 3.0; // Yüksek hassasiyet için 3.0'ü geçmesin.
+		const terim = aramaTerimi.toLowerCase().trim();
+		const bulunanSonuclar = [];
+		// MAX_ONERI_SKORU 2.5 olarak ayarlandı: Levenshtein uzaklığı 2 olanlar listelenecek.
+		const MAX_ONERI_SKORU = 2.5; 
 
-
-    if (!byd_verileri || byd_verileri.length === 0) return; 
+	if (!byd_verileri || byd_verileri.length === 0) return; 
 
     byd_verileri.forEach((kayit, index) => {
         let skor = Infinity;
@@ -309,14 +305,14 @@ function aramaYap(aramaTerimi) {
             }
         }
         
-        // Sadece 3.0'ın altındaki Levenshtein skorları listelenecektir.
-			if (skor !== Infinity && skor < MAX_ONERI_SKORU) { 
-            bulunanSonuclar.push({
-                ...kayit,
-                skor: skor,
-                index: index 
-            });
-        }
+	// ⚠️ KRİTİK FİLTRELEME: Skoru 2.5'ten küçük olanları listeye al.
+	if (skor !== Infinity && skor < MAX_ONERI_SKORU) {
+		bulunanSonuclar.push({
+			...kayit,
+			skor: skor,
+			index: index 
+		});
+	}
     });
 
     // Skora göre sırala
@@ -366,10 +362,10 @@ function gosterOneriListesi(oneriler) {
                 tumKelimeler.forEach(kelime => {
                     const skor = benzerlikSkoruHesapla(kelime, aramaTerimi);
  
-					// ⚠️ KRİTİK VURGULAMA KONTROLÜ: Yazım hatalı kelimeyi bold yapmak için 2.5'e kadar kabul et.
-						if (skor < 2.5 && skor < enDusukSkor) { 
-                        enDusukSkor = skor;
-                        enIyiEslesme = kelime;
+						// ⚠️ KRİTİK VURGULAMA KONTROLÜ: Sadece Levenshtein uzaklığı 2.0 veya altı olanları BOLD yap.
+							if (skor < 2.1 && skor < enDusukSkor) { 
+							enDusukSkor = skor;
+							enIyiEslesme = kelime;
                     }
                 });
 

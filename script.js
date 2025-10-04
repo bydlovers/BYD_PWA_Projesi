@@ -77,8 +77,6 @@ function extractVideoId(url) {
 /**
  * Ana benzerlik skorunu Levenshtein Uzaklığını kullanarak hesaplar.
  * Skor ne kadar düşükse o kadar yakındır (0 = Mükemmel Eşleşme).
- *
- * NOT: Bu fonksiyon artık kelime bazında skorlama için kullanılmaktadır.
  */
 function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
     if (!arananTerim || aranacakMetin === undefined) return Infinity; 
@@ -86,7 +84,7 @@ function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
     const text = aranacakMetin.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
     const query = arananTerim.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
     
-    // 1. Mükemmel eşleşme/Substring önceliği (Sadece kelimenin bir kısmı yazılırsa)
+    // 1. Mükemmel eşleşme/Substring önceliği
     if (text.includes(query)) {
         return text.indexOf(query) * 0.01;
     }
@@ -94,7 +92,7 @@ function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
     // 2. Levenshtein Uzaklığını Hesapla
     const uzaklik = levenshteinUzakligiHesapla(text, query);
     
-    // HATA KONTROLÜ: Tek harf veya iki harf eksik yazımı kabul et (Lstik -> Lastik skor 1, ytkilen -> yetkilen skor 2)
+    // HATA KONTROLÜ: Tek harf veya iki harf eksik yazımı kabul et (Lstik -> Lastik skor 1)
     if (uzaklik <= 2) {
         return uzaklik;
     }
@@ -104,7 +102,7 @@ function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
         return Infinity;
     }
 
-    // Uzun kelimeler için normalizasyon (Örn: "uzunbir kelime" aranan, "uzunkelime" bulunan)
+    // Uzun kelimeler için normalizasyon 
     let score = uzaklik;
     score += Math.abs(text.length - query.length) * 0.2; 
 
@@ -117,7 +115,6 @@ function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
 }
 
 function gosterSonuclari(veri) {
-    // ... (Bu kısım aynı kalmıştır)
     sonucAlani.style.display = 'block';
     
     sonucSoru.textContent = veri.soru; 
@@ -265,7 +262,8 @@ function aramaYap(aramaTerimi) {
     }
 
     const bulunanSonuclar = [];
-    const MAX_ONERI_SKORU_TOPLAM = 5.0; // Tüm kelimelerin toplam skoru için üst eşik
+    // Tüm kelimelerin toplam skoru için üst eşik (Örn: 5)
+    const MAX_ONERI_SKORU_TOPLAM = 5.0; 
 
     if (!byd_verileri || byd_verileri.length === 0) return; 
 
@@ -273,6 +271,7 @@ function aramaYap(aramaTerimi) {
         let toplamSkor = 0;
         let eslesenKelimeSayisi = 0;
         
+        // Kaydın tüm metinlerini birleştir
         const kaynakMetinler = [
             kayit.soru,
             kayit.cevap,
@@ -294,15 +293,44 @@ function aramaYap(aramaTerimi) {
                 }
             }
             
-            // Eğer en iyi skor 3'ten büyükse veya kelime bulunamazsa (Infinity), bu kelimeyi eşleşmemiş say
+            // Eğer en iyi skor 3'ten büyükse, bu kelimeyi eşleşmemiş say
             if (enIyiKelimeSkoru <= 3.0) {
                 toplamSkor += enIyiKelimeSkoru;
                 eslesenKelimeSayisi++;
             } else {
-                // Kelimelerden biri bile yeterince eşleşmezse, kaydı tamamen reddet (AND mantığı)
+                // Kelimelerden biri bile eşleşmezse, kaydı tamamen reddet (AND mantığı)
                 toplamSkor = Infinity; 
                 break;
             }
         }
         
-        // Final
+        // Final filtreleme: Tüm kelimeler eşleşmeli ve toplam skor eşiği geçmemeli
+        if (toplamSkor !== Infinity && eslesenKelimeSayisi === aramaKelimeleri.length && toplamSkor < MAX_ONERI_SKORU_TOPLAM) {
+            bulunanSonuclar.push({
+                ...kayit,
+                skor: toplamSkor,
+                index: index 
+            });
+        }
+    });
+
+    // Skora göre sırala
+    bulunanSonuclar.sort((a, b) => a.skor - b.skor);
+
+    const oneriler = bulunanSonuclar.slice(0, 10);
+    gosterOneriListesi(oneriler, aramaKelimeleri);
+}
+
+/**
+ * Öneri listesi HTML'ini oluşturur ve gösterir.
+ * @param {Array<Object>} oneriler - Skorlanmış ve sıralanmış kayıtlar dizisi
+ * @param {Array<string>} aramaKelimeleri - aramaYap'tan gelen küçük harfli arama kelimeleri
+ */
+function gosterOneriListesi(oneriler, aramaKelimeleri) {
+    onerilerDiv.innerHTML = '';
+    aktifOneriIndeksi = -1;
+    
+    if (oneriler.length > 0) {
+        
+        oneriler.forEach((kayit, listIndex) => {
+            const oneri

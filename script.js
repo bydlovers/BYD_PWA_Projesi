@@ -1,4 +1,43 @@
 // =================================================================
+// * Levenshtein Algoritması
+// =================================================================
+/**
+ * Standart Levenshtein Uzaklığı algoritması.
+ * İki kelime arasındaki minimum düzenleme sayısını (ekleme, çıkarma, değiştirme) hesaplar.
+ * @param {string} s1 - İlk kelime (örnek: "lstik").
+ * @param {string} s2 - İkinci kelime (örnek: "lastik").
+ * @returns {number} Uzaklık skoru (0 = Mükemmel Eşleşme).
+ */
+function levenshteinUzakligiHesapla(s1, s2) {
+    if (s1.length === 0) return s2.length;
+    if (s2.length === 0) return s1.length;
+
+    const matrix = [];
+
+    // Matrisi ilkle
+    for (let i = 0; i <= s2.length; i++) {
+        matrix[i] = [i];
+    }
+    for (let j = 0; j <= s1.length; j++) {
+        matrix[0][j] = j;
+    }
+
+    // Matrisi doldur
+    for (let i = 1; i <= s2.length; i++) {
+        for (let j = 1; j <= s1.length; j++) {
+            const cost = (s2.charAt(i - 1) === s1.charAt(j - 1)) ? 0 : 1;
+            matrix[i][j] = Math.min(
+                matrix[i - 1][j] + 1,      // Silme
+                matrix[i][j - 1] + 1,      // Ekleme
+                matrix[i - 1][j - 1] + cost // Değiştirme
+            );
+        }
+    }
+
+    return matrix[s2.length][s1.length];
+}
+
+// =================================================================
 // 1. DOM ELEMENTLERİ VE YARDIMCI DEĞİŞKENLER
 // =================================================================
 
@@ -45,68 +84,48 @@ function extractVideoId(url) {
 
 
 /**
- * Aranan terim ile metin arasındaki basit benzerlik skorunu hesaplar. (FUZZY MATCHING)
- * SKOR NE KADAR DÜŞÜKSE O KADAR İYİDİR. (0 = Mükemmel Eşleşme)
- * @param {string} aranacakMetin - Aranacak metin (Soru, Etiket, Cevap).
- * @param {string} arananTerim - Kullanıcının girdiği terim (Örn: "lstik").
- * @returns {number} Benzerlik skoru (0=Mükemmel Eşleşme, Infinity=Eşleşme yok).
+ * Ana benzerlik skorunu Levenshtein Uzaklığını kullanarak hesaplar.
+ * Skor ne kadar düşükse o kadar yakındır (0 = Mükemmel Eşleşme).
  */
 function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
     if (!arananTerim || aranacakMetin === undefined) return Infinity; 
     
+    // Metinleri temizle ve küçük harfe çevir
     const text = aranacakMetin.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
     const query = arananTerim.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
 
-    // Kısa terim ve uzun metin kontrolü
-    if (query.length <= 3 && text.length > 20 && !text.includes(query)) return Infinity; 
-
-
-    // 1. Mükemmel Eşleşme Skoru
+    // 1. Eğer arama metni, aranan terimi içeriyorsa (Mükemmel eşleşme/Substring)
     if (text.includes(query)) {
+        // Skoru, eşleşmenin başlangıç konumuna göre belirle (başta olması önemli)
         return text.indexOf(query) * 0.01;
     }
 
-    // 2. Basit Yazım Hatası Toleransı
-    let score = 0;
-    let eslesenKarakterSayisi = 0;
-    let lastIndex = -1;
-
-    for (let i = 0; i < query.length; i++) {
-        const currentChar = query[i];
-        
-        // Karakterin metin içinde sıradan sonraki konumda aranması
-        const currentIndex = text.indexOf(currentChar, lastIndex + 1);
-
-        if (currentIndex === -1) {
-            // Karakter hiç bulunamazsa veya sıradan sonra bulunamazsa ceza
-            score += 1.5; // (2.0'dan 1.5'e düşürüldü)
-        } else {
-            // Karakter doğru sırada bulundu
-            eslesenKarakterSayisi++;
-            // Karakterler arasındaki mesafeden kaynaklanan ceza
-            score += (currentIndex - lastIndex) * 0.05; // Daha da hafifletildi (0.1'den 0.05'e)
-            lastIndex = currentIndex;
-        }
-    }
+    // 2. Levenshtein Uzaklığını Hesapla
+    const uzaklik = levenshteinUzakligiHesapla(text, query);
     
-    // ⚠️ KRİTİK EKSİK HARF BONUSU/CEZASI:
-    // Eşleşen karakter sayısının, aranan terim uzunluğuna oranı
-    const yuzdeEslesme = eslesenKarakterSayisi / query.length;
-    
-    // Eğer eşleşme oranı %75'ten azsa, bu kaydı reddet
-    if (yuzdeEslesme < 0.75) {
+    // Yüksek uzaklık reddi (Çok büyük metinlerde alakasız eşleşmeleri engeller)
+    if (uzaklik > 3) {
+         // Uzaklık 3'ten fazlaysa, büyük ihtimalle alakasızdır.
+         // Kısa kelimelerde (4-5 harf) bile 2'den fazla hata çok fazladır.
         return Infinity;
     }
-
-    // Uzunluk farkı cezası (Çok hafif tutuldu)
-    score += Math.abs(text.length - query.length) * 0.1;
     
-    // Yüksek Skor Reddi: Eğer skor hala yüksekse
-    // Bu kontrol, önceki kontrollerden daha esnek çalışmalıdır.
-    if (score > 3.5) {
-        return Infinity;
-    }
+    // 3. Normalized Score (Skoru metin uzunluğuna göre ayarlıyoruz)
+    // Uzaklık skoru + kelime uzunluğu farkının bir kısmı.
+    let score = uzaklik;
 
+    // Normalizasyon cezası: Uzunluk farkının yarısını skora ekle.
+    // Bu, "araba" (5) ve "ar" (2) gibi kelimelerin skoru yükseltmesini sağlar.
+    score += Math.abs(text.length - query.length) * 0.5;
+
+
+    // 4. Son Kontrol: Uzaklık 1 veya 2 ise (typo), uzunluk farkını daha az cezalandır.
+    if (uzaklik <= 2) {
+        // Eğer Levenshtein uzaklığı düşükse, sadece Levenshtein'ı baz al.
+        score = uzaklik; 
+    }
+    
+    // Levenshtein uzaklığı $1$ olan kelimelerin skoru $1.0$'dır.
     return score;
 }
 
@@ -262,7 +281,7 @@ function aramaYap(aramaTerimi) {
 
     const terim = aramaTerimi.toLowerCase().trim();
     const bulunanSonuclar = [];
-    const MAX_ONERI_SKORU = terim.length > 5 ? 4.0 : 3.0; // Uzun terimler için daha esnek ol
+	const MAX_ONERI_SKORU = 3.0; // Yüksek hassasiyet için 3.0'ü geçmesin.
 
 
     if (!byd_verileri || byd_verileri.length === 0) return; 
@@ -290,8 +309,8 @@ function aramaYap(aramaTerimi) {
             }
         }
         
-        // ⚠️ KRİTİK FİLTRELEME: Belirlenen eşiğin altındaysa listeye ekle
-        if (skor !== Infinity && skor < MAX_ONERI_SKORU) {
+        // Sadece 3.0'ın altındaki Levenshtein skorları listelenecektir.
+			if (skor !== Infinity && skor < MAX_ONERI_SKORU) { 
             bulunanSonuclar.push({
                 ...kayit,
                 skor: skor,
@@ -346,10 +365,9 @@ function gosterOneriListesi(oneriler) {
                 // Tüm kelimeler arasında arama terimiyle en yakın olanı bul
                 tumKelimeler.forEach(kelime => {
                     const skor = benzerlikSkoruHesapla(kelime, aramaTerimi);
-                    
-                    // ⚠️ KRİTİK DEĞİŞİKLİK: Eşik değeri 2.0'dan 3.5'e yükseltildi. 
-                    // Bu, 'lstik' ve 'lastik' gibi kelimelerin, vurgulama için yeterince yakın sayılmasını sağlar.
-                    if (skor < 3.5 && skor < enDusukSkor) { 
+ 
+					// ⚠️ KRİTİK VURGULAMA KONTROLÜ: Yazım hatalı kelimeyi bold yapmak için 2.5'e kadar kabul et.
+						if (skor < 2.5 && skor < enDusukSkor) { 
                         enDusukSkor = skor;
                         enIyiEslesme = kelime;
                     }

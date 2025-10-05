@@ -62,24 +62,32 @@ let aktifOneriIndeksi = -1;
 // 2. YARDIMCI FONKSİYONLAR
 // =================================================================
 
-// ... (extractVideoId fonksiyonu burada kalır) ...
+function extractVideoId(url) {
+    if (!url) return null;
+    let videoId = null;
+    // YouTube linklerinin kısa/uzun, watch/shorts tüm formatlarını yakalar
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    
+    if (match && match[1]) {
+        videoId = match[1];
+    }
+    return videoId;
+}
 
 /**
  * Ana benzerlik skorunu Levenshtein Uzaklığını kullanarak hesaplar.
  * Skor ne kadar düşükse o kadar yakındır (0 = Mükemmel Eşleşme).
  */
 function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
-    // arananTerim ve aranacakMetin'in tanımlı olduğunu kontrol etmeliyiz.
-    // Hata burada: 'aranacakMetin' yerine yanlış bir değişken adı kullanılmış olabilir.
-    // Lütfen aşağıdaki satırın script.js'deki 83. satır civarına denk geldiğini kontrol edin.
     if (!arananTerim || aranacakMetin === undefined) return Infinity; 
     
     const text = aranacakMetin.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
     const query = arananTerim.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
     
-    // 1. Mükemmel eşleşme/Substring önceliği
+    // 1. Mükemmel eşleşme/Substring önceliği (Tam kelime içinde geçme)
     if (text.includes(query)) {
-        return text.indexOf(query) * 0.01; // Başlangıçta eşleşme en iyi skoru verir
+        return text.indexOf(query) * 0.01; 
     }
 
     // 2. Levenshtein Uzaklığını Hesapla
@@ -99,7 +107,7 @@ function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
     let score = uzaklik;
     score += Math.abs(text.length - query.length) * 0.2; 
 
-    // Genel olarak 3'ten fazla skor alakasız sayılır
+    // Genel olarak 3.0'dan fazla skor alakasız sayılır
     if (score > 3.0) {
         return Infinity;
     }
@@ -232,7 +240,7 @@ async function verileriYukle() {
 verileriYukle();
 
 // =================================================================
-// 4. GELİŞMİŞ ARAMA VE VURGULAMA MANTIĞI (ÇOKLU KELİME ODAKLI)
+// 4. GELİŞMİŞ ARAMA VE FİLTRELEME MANTIĞI (ÇOKLU KELİME ODAKLI)
 // =================================================================
 
 /**
@@ -278,11 +286,10 @@ function aramaYap(aramaTerimi) {
             const kayitKelimeleri = kaynakMetinler.split(/\s+/).filter(w => w.length > 1);
             let enIyiKelimeSkoru = Infinity;
             
-            // KRİTİK FİLTRELEME SKORU BELİRLEME
             let MaxSkorListeleme = 3.0;
             // Eğer aranan kelime çok kısaysa (4 harften az), listelemek için çok daha katı bir skor iste
             if (arananKelime.length < 4) { 
-                MaxSkorListeleme = 1.0; // Sadece mükemmel eşleşme (skor 0) veya tek harf hatası (skor 1) kabul et
+                MaxSkorListeleme = 1.0; 
             }
             
             for (const kayitKelime of kayitKelimeleri) {
@@ -295,15 +302,13 @@ function aramaYap(aramaTerimi) {
             // Eğer Levenshtein skoru izin verilen eşiği aşarsa (Örnek: ytk aramasında MaxSkorListeleme = 1.0)
             if (enIyiKelimeSkoru > MaxSkorListeleme) {
                 
-                // EK KONTROL: Eğer aranan kelime, kaydın içindeki herhangi bir kelimenin BAŞLANGICINA çok benziyorsa
+                // EK KONTROL: Eğer aranan kelime, kaydın içindeki herhangi bir kelimenin BAŞLANGICINA çok benziyorsa (Kısaltmalar için)
                 let baslangicEslesmesiVar = false;
                 for (const kayitKelime of kayitKelimeleri) {
-                    // Kayıt kelimesinin en az aranan kelime kadar uzun olduğundan emin ol
                     if (kayitKelime.length >= arananKelime.length) {
                         const baslangic = kayitKelime.substring(0, arananKelime.length);
                         // Başlangıç Levenshtein skoru kontrolü (Çok katı: 0 veya 1 hata)
                         if (levenshteinUzakligiHesapla(baslangic, arananKelime) <= 1) { 
-                             // Eğer kelimenin başlangıcı neredeyse mükemmel eşleşiyorsa, kabul et.
                             baslangicEslesmesiVar = true;
                             break;
                         }
@@ -312,7 +317,7 @@ function aramaYap(aramaTerimi) {
 
                 if (baslangicEslesmesiVar) {
                      // Başlangıç eşleşmesi varsa, düşük bir ceza puanı vererek kabul et
-                    toplamSkor += 1.5; // Levenshtein skoru yerine 1.5 gibi bir skor kullan
+                    toplamSkor += 1.5; 
                     eslesenKelimeSayisi++;
                 } else {
                     // Ne Levenshtein ne de başlangıç eşleşmesi varsa, tamamen reddet (AND mantığı)
@@ -361,7 +366,7 @@ function gosterOneriListesi(oneriler, aramaKelimeleri) {
             
             let vurgulanmisSoru = kayit.soru;
             
-            // Vurgulama Mantığı: (Substring Eşleşmesi + Levenshtein)
+            // Vurgulama Mantığı: Sadece en iyi eşleşen kelimeyi bul ve bold yap
             if (aramaKelimeleri && aramaKelimeleri.length > 0) {
                 
                 const soruKelimeleri = kayit.soru.split(/\s+/).filter(w => w.length > 0);
@@ -372,18 +377,26 @@ function gosterOneriListesi(oneriler, aramaKelimeleri) {
                     
                     soruKelimeleri.forEach(soruKelime => {
                         
+                        const kucukSoruKelime = soruKelime.toLowerCase();
+                        
                         // 1. ÖNCELİK: SUBSTRING KONTROLÜ (Kısmi Eşleşme - bas -> basıncı)
-                        if (soruKelime.toLowerCase().includes(arananTerim)) {
-                            enIyiSoruKelime = soruKelime;
-                            enDusukSkor = 0; // Mükemmel kabul et
-                            return; // En iyi eşleşme bulundu
+                        // Arama terimi, soru kelimesini içeriyorsa (basıncı.includes(basın))
+                        if (kucukSoruKelime.includes(arananTerim)) {
+                            // Substring eşleşmesi varsa, en iyi skor (0) ile hemen kabul et.
+                            if (0 < enDusukSkor) {
+                                enIyiSoruKelime = soruKelime;
+                                enDusukSkor = 0; 
+                            }
+                            // Eğer mükemmel eşleşme varsa, Levenshtein'a bakmaya gerek yok.
+                            if (enDusukSkor === 0) return; 
                         }
                         
                         // 2. ÖNCELİK: LEVENSHTEIN (Hatalı Yazım - lstik -> lastik)
                         const skor = benzerlikSkoruHesapla(soruKelime, arananTerim);
                         
-                        // Vurgulama toleransı 2.1 (tek/iki harf hatalı doğru yazım için)
-                        if (skor < 2.1 && skor < enDusukSkor) { 
+                        // Vurgulama toleransı 1.1'e düşürüldü. (Sadece tek harf hatalı yazımları boldla)
+                        // Bu, "nasıl" gibi alakasız kelimelerin yanlışlıkla bold yapılmasını engeller.
+                        if (skor < 1.1 && skor < enDusukSkor) { 
                             enDusukSkor = skor;
                             enIyiSoruKelime = soruKelime;
                         }
@@ -392,9 +405,11 @@ function gosterOneriListesi(oneriler, aramaKelimeleri) {
                     // Eğer tatmin edici bir kelime bulunduysa, o kelimeyi vurgula
                     if (enIyiSoruKelime) {
                         // Vurgulama işlemi (büyük/küçük harf duyarsız, sadece tam kelime)
-                        // \b: Kelime sınırları içinde eşleşmeyi zorunlu kılar.
                         const regex = new RegExp(`\\b(${enIyiSoruKelime})\\b`, 'gi');
-                        vurgulanmisSoru = vurgulanmisSoru.replace(regex, '<b>$1</b>');
+                        // Vurgulamayı yalnızca bir kez yap (en alakalı olanı)
+                        if (vurgulanmisSoru.search(regex) !== -1) {
+                            vurgulanmisSoru = vurgulanmisSoru.replace(regex, '<b>$1</b>');
+                        }
                     }
                 });
             }

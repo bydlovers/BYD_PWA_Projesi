@@ -62,25 +62,17 @@ let aktifOneriIndeksi = -1;
 // 2. YARDIMCI FONKSİYONLAR
 // =================================================================
 
-function extractVideoId(url) {
-    if (!url) return null;
-    let videoId = null;
-    // YouTube linklerinin kısa/uzun, watch/shorts tüm formatlarını yakalar
-    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/|youtube\.com\/shorts\/)([^"&?\/\s]{11})/;
-    const match = url.match(regex);
-    
-    if (match && match[1]) {
-        videoId = match[1];
-    }
-    return videoId;
-}
+// ... (extractVideoId fonksiyonu burada kalır) ...
 
 /**
  * Ana benzerlik skorunu Levenshtein Uzaklığını kullanarak hesaplar.
  * Skor ne kadar düşükse o kadar yakındır (0 = Mükemmel Eşleşme).
  */
 function benzerlikSkoruHesapla(aranacakMetin, arananTerim) {
-    if (!arananMetin || arananTerim === undefined) return Infinity; 
+    // arananTerim ve aranacakMetin'in tanımlı olduğunu kontrol etmeliyiz.
+    // Hata burada: 'aranacakMetin' yerine yanlış bir değişken adı kullanılmış olabilir.
+    // Lütfen aşağıdaki satırın script.js'deki 83. satır civarına denk geldiğini kontrol edin.
+    if (!arananTerim || aranacakMetin === undefined) return Infinity; 
     
     const text = aranacakMetin.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');
     const query = arananTerim.toLowerCase().replace(/[^a-z0-9ğüşıöç\s]/g, '');

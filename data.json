@@ -3,10 +3,10 @@
     "veriler": [
         {
             "soru": "Bagaj kapatma butonu nasıl çalışıyor? Bagajı buton ile kapatamıyorum.",
-            "cevap": "Bagaj açma butonunu çekince bagaj açılır, basılı turunca kapatır.",
+            "cevap": "Bagaj açma butonunu çekince bagaj açılır, basılı turunca kapatır. Ayrıntılı bilgi için aşağıdaki videoyu izleyebilirsiniz.",
             "kategori": "DM-i",
             "etiketler": [
-                "Bagaj,Lastik",
+                "Bagaj",
                 "buton"
             ],
             "foto": "",
@@ -15,8 +15,8 @@
         },
         {
             "soru": "Yetkilendirme nasıl yapılır?",
-            "cevap": "cevabı buraya ayzıyoruz",
-            "kategori": "Bakım",
+            "cevap": "BYD Auto Uygulamasında, arabanızı ortak kullanmak istediğiniz  kişilerin e-posta adreslerini kaydederek, yetki verebilirsiniz. Ayrıntılı bilgi için aşağıdaki videoyu izleyebilirsiniz.",
+            "kategori": "Uygulama",
             "etiketler": [
                 "Bagaj",
                 "basınç"
@@ -103,7 +103,7 @@
         },
         {
             "soru": "Dolphin'in oto start\/stop özelliği var mı?",
-            "cevap": "BYD Dolphin 2024 modellerde yok ama 2025 modellerde oto start\/stop özelliği var.",
+            "cevap": "BYD Dolphin 2024 modellerde yok ama 2025 modellerde oto start\/stop özelliği var. Ayrıntılı bilgi için aşağıdaki videoyu izleyebilirsiniz.",
             "kategori": "Dolphin",
             "etiketler": [
                 "dolphin",

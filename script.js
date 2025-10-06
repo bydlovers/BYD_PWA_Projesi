@@ -494,65 +494,28 @@ aramaKutusu.addEventListener('blur', function() {
 });
 
 // =================================================================
-// 6. YENİ: ÇÖZÜM BULAMADIM / GOOGLE FORM MANTIĞI
+// 6. YENİ: ÇÖZÜM BULAMADIM / IFRAME MANTIĞI
 // =================================================================
 
 const cozumBulamadimButton = document.getElementById('cozumBulamadimButton');
-const feedbackForm = document.getElementById('feedbackForm');
-const feedbackTextarea = document.getElementById('feedbackTextarea');
-const gonderButton = document.getElementById('gonderButton');
-const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScVNs9nlZgDhqgGbDeTR8i6lkKz5ySG9j6_Gi8bEnm2wrUCrA/viewform"; 
+const feedbackFormContainer = document.getElementById('feedbackFormContainer');
+const googleFeedbackIframe = document.getElementById('googleFeedbackIframe');
 
 /**
- * "Çözüm Bulamadım" butonuna tıklandığında formu gösterir/gizler.
+ * "Çözüm Bulamadım" butonuna tıklandığında IFRAME formunu gösterir/gizler.
  */
 cozumBulamadimButton.addEventListener('click', function() {
-    if (feedbackForm.classList.contains('feedback-form-visible')) {
-        feedbackForm.classList.remove('feedback-form-visible');
-        feedbackForm.classList.add('feedback-form-hidden');
+    // Formun görünürlük durumunu değiştir
+    if (feedbackFormContainer.classList.contains('feedback-form-visible')) {
+        feedbackFormContainer.classList.remove('feedback-form-visible');
+        feedbackFormContainer.classList.add('feedback-form-hidden');
         cozumBulamadimButton.textContent = "Çözüm bulamadım 😞";
     } else {
-        feedbackForm.classList.remove('feedback-form-hidden');
-        feedbackForm.classList.add('feedback-form-visible');
-        feedbackTextarea.focus();
+        feedbackFormContainer.classList.remove('feedback-form-hidden');
+        feedbackFormContainer.classList.add('feedback-form-visible');
         cozumBulamadimButton.textContent = "Geri bildirimi gizle ▲";
+        
+        // Iframe içine odaklanma mümkün olmayabilir, ancak scroll'u getiririz.
+        feedbackFormContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-});
-
-/**
- * Gönder butonuna tıklandığında, metni alıp kullanıcıyı Google Form'a yönlendirir.
- */
-gonderButton.addEventListener('click', function() {
-    const geriBildirimMetni = feedbackTextarea.value.trim();
-    
-    if (geriBildirimMetni.length < 10) {
-        alert("Lütfen sorununuzu detaylı bir şekilde (en az 10 karakter) yazınız.");
-        return;
-    }
-    
-    // 1. Google Form'un "pre-filled" (önceden doldurulmuş) URL'sini almalısınız.
-    //    Bunu yapmak için Google Form'unuzda "3 nokta" > "Önceden Doldurulmuş Bağlantı Al" adımlarını izleyin.
-    //    Metin alanına örnek bir metin yazın ve oluşturulan uzun URL'yi kopyalayın.
-    //    Kopyaladığınız uzun URL'de 'entry.XXXXXXXXXX=ornekyazi' kısmını bulun.
-    
-    // 2. Örnek: Eğer uzun URL'nizdeki metin alanı kimliği 'entry.123456789' ise:
-    const ENTRY_ID = "entry.829077767"; // Google Form'daki metin alanının kimliği
-    
-    // 3. Form verisini URL'ye ekle
-    const encodedMetin = encodeURIComponent(geriBildirimMetni);
-    
-    // 4. Nihai hedef URL'yi oluştur
-    const hedefURL = `${GOOGLE_FORM_URL}?${ENTRY_ID}=${encodedMetin}`;
-
-    // Yeni sekmede Google Form'u aç
-    window.open(hedefURL, '_blank');
-
-    // Kullanıcıya bilgi ver
-    alert("Geri bildiriminiz Google Form'a aktarıldı. Lütfen açılan sekmede 'Gönder' butonuna tıklayarak işlemi tamamlayınız.");
-
-    // Formu temizle ve gizle
-    feedbackTextarea.value = "";
-    feedbackForm.classList.remove('feedback-form-visible');
-    feedbackForm.classList.add('feedback-form-hidden');
-    cozumBulamadimButton.textContent = "Çözüm bulamadım 😞";
 });

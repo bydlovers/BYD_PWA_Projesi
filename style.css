@@ -1,6 +1,6 @@
 /*
  * BYD LOVERS DESTEK UYGULAMASI - iOS STİLİ
- * Son Düzenleme: Tipografi, Ortalanmış Geri Bildirim ve Geri Besleme Butonları.
+ * Son Düzenleme: Tüm içerik 450px'e sabitlendi ve geri bildirim alanı uyumu sağlandı.
  */
 
 /* ========================================================================
@@ -20,8 +20,10 @@ body {
 }
     
 .container {
+    /* İstenen MAKSİMUM GENİŞLİK */
     max-width: 450px; 
-    margin: 0 auto;
+    
+    margin: 0 auto; /* Sayfayı ortalar */
     padding: 20px 15px;
 }
 
@@ -30,10 +32,9 @@ body {
    ======================================================================== */
 #appLogo {
     display: block; 
-    margin: 0 auto 30px auto; /* Alt boşluğu artırdık */
+    margin: 0 auto 30px auto; 
     max-width: 150px; 
     height: auto; 
-    /* Logo için hafif bir gölge ekleyelim */
     filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.05)); 
 }
 
@@ -50,47 +51,44 @@ h1 {
    ======================================================================== */
 .search-container {
     position: relative;
-    margin-bottom: 25px; /* Alt boşluğu artırdık */
+    margin-bottom: 25px; 
 }
 
 #aramaKutusu {
     width: 100%;
     padding: 12px 15px;
-    font-size: 1em; /* 16px yerine em kullandık */
-    border: none; /* iOS tarzı için kenarlığı kaldırdık */
-    border-radius: 12px; /* Daha yuvarlak köşeler */
+    font-size: 1em; 
+    border: none; 
+    border-radius: 12px; 
     box-sizing: border-box;
     background-color: white; 
-    /* iOS tarzı belirgin gölge */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
     transition: box-shadow 0.2s, border-color 0.2s;
 }
 
 #aramaKutusu:focus {
     outline: none;
-    /* Odaklanıldığında gölgeyi artır */
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15); 
 }
 
-/* Öneri Listesi Stili (Table View Listesi gibi) */
+/* Öneri Listesi Stili */
 #oneriler {
     position: absolute;
     z-index: 10;
     width: 100%;
-    /* Kenarlığı kaldırıp gölgeyi ana kutuya benzetelim */
     border: none;
     border-radius: 12px;
     margin-top: 5px;
     max-height: 250px;
     overflow-y: auto;
     background-color: white;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Daha belirgin gölge */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); 
 }
 
 .oneri-item {
     padding: 12px 15px;
     cursor: pointer;
-    border-bottom: 1px solid #EDEDED; /* Daha ince, temiz ayırıcı */
+    border-bottom: 1px solid #EDEDED; 
     font-size: 1em;
     color: #1C1C1E;
     transition: background-color 0.15s;
@@ -99,10 +97,10 @@ h1 {
     border-bottom: none;
 }
 .oneri-item:hover {
-    background-color: #F0F0F5; /* Hafif gri vurgu */
+    background-color: #F0F0F5; 
 }
 
-/* Klavye ile seçilen aktif öğe (Mavi Vurgu) */
+/* Klavye ile seçilen aktif öğe */
 .aktif-oneri {
     background-color: #007AFF; 
     color: white; 
@@ -118,39 +116,36 @@ h1 {
     margin-top: 40px;
     background-color: white;
     padding: 25px;
-    border-radius: 14px; /* Köşeleri daha da yuvarlak yaptık */
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); /* Yumuşak gölge */
+    border-radius: 14px; 
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08); 
     display: none;
 }
 
-/* Soru Başlığı */
 #sonucSoru {
-    font-size: 1em; /* Daha büyük ve belirgin */
+    font-size: 1em; 
     color: #007AFF; 
     font-weight: 700;
     display: block;
     margin-bottom: 20px;
 }
 
-/* İçerik Başlıkları (Cevap, Video, Fotoğraf vb.) */
 .sonuc-baslik {
-    color: #3C3C43; /* Daha yumuşak gri başlık rengi */
-    font-weight: 600; /* SemiBold */
+    color: #3C3C43; 
+    font-weight: 600; 
     font-size: 1.1em;
     margin-top: 25px;
     padding-bottom: 5px;
-    border-bottom: 1px solid #EAEAEA; /* Çok ince ayırıcı */
+    border-bottom: 1px solid #EAEAEA; 
 }
 .sonuc-baslik:first-child {
     margin-top: 0;
 }
 
-/* Ana Metin İçeriği */
 .sonuc-icerik {
     margin-top: 10px;
     font-size: 1em;
     line-height: 1.6;
-    color: #3C3C43; /* Okunabilirliği artırıldı */
+    color: #3C3C43; 
 }
 
 /* ========================================================================
@@ -159,19 +154,17 @@ h1 {
 
 .sonuc-icerik-kategori, .sonuc-icerik-etiketler {
     display: inline-block;
-    /* iOS'un açık gri arka planı */
     background-color: #EFEFF4; 
     color: #3C3C43;
     padding: 4px 10px;
-    border-radius: 12px; /* Pill (hap) görünümü */
-    font-size: 0.85em; /* Biraz daha küçük */
+    border-radius: 12px; 
+    font-size: 0.85em; 
     font-weight: 500;
     margin-top: 5px;
     margin-right: 8px;
     line-height: 1.2;
 }
 
-/* Etiketler arası boşluğu sağlamak için */
 .sonuc-icerik-etiketler {
     font-size: 0.8em; 
 }
@@ -188,9 +181,8 @@ h1 {
     text-decoration: underline;
 }
 
-/* Görsel/Video Yerleşimi */
 .sonuc-icerik img, #sonucVideo iframe, #sonucJPGGosterici iframe {
-    border-radius: 10px; /* Görsellere yuvarlak köşeler */
+    border-radius: 10px; 
     display: block;
     max-width: 100%;
     height: auto;
@@ -198,14 +190,14 @@ h1 {
 }
 
 /* ================================================================= */
-/* 7. GERİ BİLDİRİM VE BUTON STİLLERİ (ORTALANMIŞ) */
+/* 7. GERİ BİLDİRİM VE BUTON STİLLERİ (UYUMLU) */
 /* ================================================================= */
 
 .feedback-container {
-    /* ORTALAMA VE SINIRLAMA İÇİN YENİ KOD */
-    max-width: 100%; /* .container ile aynı genişlik */
-    margin: 10px auto 20px auto; /* Ortalamak için margin: auto */
-    padding: 0 15px; /* Küçük cihazlarda kenar boşluğu */
+    /* Hatalı padding ve margin ayarları temizlendi. Artık .container'ın padding'ini kullanacak. */
+    max-width: 100%; 
+    margin: 10px 0 20px 0; 
+    padding: 0; /* TEMİZLENDİ */
     box-sizing: border-box;
 }
 
@@ -213,39 +205,39 @@ h1 {
 .ios-button {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     font-size: 17px;
-    font-weight: 600; /* Semibold */
+    font-weight: 600; 
     padding: 10px 15px;
-    border-radius: 10px; /* Yumuşak köşeler */
+    border-radius: 10px; 
     border: none;
     cursor: pointer;
     transition: background-color 0.2s, opacity 0.2s;
-    width: 100%; /* Kapsayıcısının (feedback-container) genişliğini alır */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+    width: 100%; 
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); 
     margin-bottom: 10px;
 }
 
 /* Birincil Buton (Gönder) */
 .primary-button {
-    background-color: #007AFF; /* iOS Mavi */
+    background-color: #007AFF; 
     color: white;
 }
 .primary-button:active {
-    background-color: #0056b3; /* Tıklama efekti */
+    background-color: #0056b3; 
 }
 
 /* İkincil Buton (Çözüm Bulamadım) */
 .secondary-button {
-    background-color: #f0f0f0; /* Açık gri arkaplan */
+    background-color: #f0f0f0; 
     color: #333;
     border: 1px solid #dcdcdc;
 }
 .secondary-button:active {
-    background-color: #e0e0e0; /* Tıklama efekti */
+    background-color: #e0e0e0; 
 }
 
 /* Geri Bildirim Formu Alanı */
 .feedback-form-hidden {
-    display: none; /* Varsayılan olarak gizli */
+    display: none; 
     padding: 10px 0;
 }
 
@@ -281,25 +273,21 @@ h1 {
 .feedback-butonlar {
     display: flex;
     justify-content: center;
-    gap: 15px; /* Butonlar arası boşluk */
-    /* Mobil görünümde tam genişliği kullanmak için */
+    gap: 15px; 
     flex-wrap: wrap; 
 }
 
-/* Geri Besleme Butonlarının Genel Stili */
 .feedback-button {
-    /* Daha küçük ve kompakt görünümlü butonlar */
     padding: 10px 18px;
     font-size: 16px;
     font-weight: 600;
-    border-radius: 20px; /* Hap şeklinde daha modern bir görünüm */
-    width: auto; /* İçeriğe göre genişlik */
+    border-radius: 20px; 
+    width: auto; 
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Beğen Butonu Stili (Yeşil/Başarılı) */
 .feedback-button.beğen {
-    background-color: #4CDA64; /* iOS Başarı Yeşili */
+    background-color: #4CDA64; 
     color: white;
     border: none;
 }
@@ -307,9 +295,8 @@ h1 {
     background-color: #3aa64b;
 }
 
-/* Beğenme Butonu Stili (Kırmızı/Uyarı) */
 .feedback-button.beğenme {
-    background-color: #FF3B30; /* iOS Hata Kırmızısı */
+    background-color: #FF3B30; 
     color: white;
     border: none;
 }
@@ -321,9 +308,10 @@ h1 {
 /* ========================================================================
    9. MOBİL UYUMLULUK
    ======================================================================== */
+/* Kırılma noktası 600px'e düşürüldü */
 @media (max-width: 600px) {
     .container {
-        padding: 10px 10px;
+        padding: 10px 15px;
     }
     #sonucAlani {
         padding: 15px;
@@ -331,17 +319,15 @@ h1 {
     #sonucSoru {
         font-size: 1.4em;
     }
-    .feedback-container {
-        /* Mobil cihazlarda ortalama alanı daralt */
-        padding: 0 10px;
-    }
+    
+    /* feedback-container zaten temizlendiği için burada sadece butonları ayarlıyoruz. */
     .feedback-button {
-        /* Mobil cihazlarda butonları esnek yap ve tam genişlik kullan */
+        /* Butonları alt alta sırala */
         flex-basis: 100%;
         margin-bottom: 10px;
     }
     .feedback-butonlar {
-        flex-direction: column; /* Butonları alt alta sırala */
+        flex-direction: column; 
         gap: 0;
     }
 }

@@ -213,3 +213,74 @@ h1 {
         font-size: 1.4em;
     }
 }
+/* ================================================================= */
+/* YENİ: Geri Bildirim ve Buton Stilleri (iOS Teması) */
+/* ================================================================= */
+
+.feedback-container {
+    margin: 10px 0 20px 0;
+}
+
+/* Genel iOS Buton Stili */
+.ios-button {
+    /* iOS "San Francisco" yazı tipini simüle eden sistem yazı tipleri */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    font-size: 17px;
+    font-weight: 600; /* Semibold */
+    padding: 10px 15px;
+    border-radius: 10px; /* Yumuşak köşeler */
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+    width: 100%; /* Tam genişlik */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Hafif gölge */
+    margin-bottom: 10px;
+}
+
+/* Birincil Buton (Gönder) */
+.primary-button {
+    background-color: #007AFF; /* iOS Mavi */
+    color: white;
+}
+.primary-button:active {
+    background-color: #0056b3; /* Tıklama efekti */
+}
+
+/* İkincil Buton (Çözüm Bulamadım) */
+.secondary-button {
+    background-color: #f0f0f0; /* Açık gri arkaplan */
+    color: #333;
+    border: 1px solid #dcdcdc;
+}
+.secondary-button:active {
+    background-color: #e0e0e0; /* Tıklama efekti */
+}
+
+/* Geri Bildirim Formu Alanı */
+.feedback-form-hidden {
+    display: none; /* Varsayılan olarak gizli */
+    padding: 10px 0;
+}
+
+/* Textarea Stili */
+#feedbackTextarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    margin-bottom: 10px;
+    resize: vertical; /* Sadece dikey olarak boyutlandırmaya izin ver */
+}
+
+/* Geri bildirim formu göründüğünde kullanılacak sınıf */
+.feedback-form-visible {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}

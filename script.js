@@ -492,3 +492,62 @@ aramaKutusu.addEventListener('blur', function() {
         aktifOneriIndeksi = -1;
     }, 150); 
 });
+
+// =================================================================
+// 6. YENİ: ÇÖZÜM BULAMADIM / GERİ BİLDİRİM MANTIĞI
+// =================================================================
+
+const cozumBulamadimButton = document.getElementById('cozumBulamadimButton');
+const feedbackForm = document.getElementById('feedbackForm');
+const feedbackTextarea = document.getElementById('feedbackTextarea');
+const gonderButton = document.getElementById('gonderButton');
+
+/**
+ * "Çözüm Bulamadım" butonuna tıklandığında formu gösterir/gizler.
+ */
+cozumBulamadimButton.addEventListener('click', function() {
+    // Formun görünürlük durumunu değiştir
+    if (feedbackForm.classList.contains('feedback-form-visible')) {
+        feedbackForm.classList.remove('feedback-form-visible');
+        feedbackForm.classList.add('feedback-form-hidden');
+        cozumBulamadimButton.textContent = "Çözüm bulamadım 😞";
+    } else {
+        feedbackForm.classList.remove('feedback-form-hidden');
+        feedbackForm.classList.add('feedback-form-visible');
+        feedbackTextarea.focus();
+        cozumBulamadimButton.textContent = "Geri bildirimi gizle ▲";
+    }
+});
+
+/**
+ * Gönder butonuna tıklandığında mailto: bağlantısını oluşturur.
+ */
+gonderButton.addEventListener('click', function() {
+    const geriBildirimMetni = feedbackTextarea.value.trim();
+    
+    if (geriBildirimMetni.length < 10) {
+        alert("Lütfen sorununuzu detaylı bir şekilde (en az 10 karakter) yazınız.");
+        return;
+    }
+    
+    const alici = "bydloverstr@gmail.com";
+    const konu = encodeURIComponent("BYD Bilgi Uygulaması - Kullanıcı Sorunu/Önerisi");
+    
+    // Kullanıcının tarayıcısında Enter tuşuyla satır atlaması için metni encode ederken özel işlem yapılır.
+    const icerik = encodeURIComponent(geriBildirimMetni);
+    
+    // Mailto bağlantısını oluştur
+    const mailtoLink = `mailto:${alici}?subject=${konu}&body=--- Aranan Sorun ---\n${icerik}\n\n--- Geri Bildirim Tarihi ---\n${new Date().toLocaleString('tr-TR')}`;
+    
+    // Mail uygulamasını aç
+    window.location.href = mailtoLink;
+
+    // Kullanıcıya bilgi ver ve formu temizle
+    alert("Geri bildiriminiz için teşekkürler! Mail uygulamanız açılıyor. Lütfen e-postayı göndermeyi unutmayınız.");
+    feedbackTextarea.value = "";
+    
+    // Formu tekrar gizle
+    feedbackForm.classList.remove('feedback-form-visible');
+    feedbackForm.classList.add('feedback-form-hidden');
+    cozumBulamadimButton.textContent = "Çözüm bulamadım 😞";
+});

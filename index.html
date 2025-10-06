@@ -25,7 +25,23 @@
             <div id="oneriler">
             </div>
         </div>
-        
+<div class="search-container">
+    <input type="text" id="aramaKutusu" placeholder="Soru, kategori veya etiket yazmaya başlayın...">
+    <div id="oneriler" class="suggestions"></div>
+</div>
+
+<div class="feedback-container">
+    <button id="cozumBulamadimButton" class="ios-button secondary-button">
+        Çözüm bulamadım 😞
+    </button>
+    
+    <div id="feedbackForm" class="feedback-form-hidden">
+        <textarea id="feedbackTextarea" placeholder="Aradığınız soruyu buraya yazın..." rows="4" required></textarea>
+        <button id="gonderButton" class="ios-button primary-button">
+            Gönder
+        </button>
+    </div>
+</div>       
         <div id="sonucAlani">
             <h2><span id="sonucSoru"></span></h2>
             

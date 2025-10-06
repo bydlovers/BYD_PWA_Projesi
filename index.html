@@ -80,7 +80,21 @@
             <p id="sonucEtiketler" class="sonuc-icerik-etiketler"></p>
         </div>
     </div>
-
+<div id="sonucAlani" class="sonuc-alani">
+    <div id="feedbackBegeiAlani" class="feedback-begei-alani">
+        <h4 class="feedback-baslik">Burada anlatılanlar işinize yaradı mı?</h4>
+        <div class="feedback-butonlar">
+            <button id="beğenButton" class="ios-button feedback-button beğen">
+                👍 Evet, teşekkür ederim.
+            </button>
+            <button id="beğenmeButton" class="ios-button feedback-button beğenme">
+                👎 Hayır, yeterli değil.
+            </button>
+        </div>
+        <p id="feedbackMesaj" style="font-size: 0.9em; color: #555; margin-top: 10px; display: none; text-align: center;"></p>
+    </div>
+    
+</div>
 <script src="script.js" id="jsScript"></script>
 <script>
 if ('serviceWorker' in navigator) {

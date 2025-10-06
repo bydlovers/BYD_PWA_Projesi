@@ -519,3 +519,40 @@ cozumBulamadimButton.addEventListener('click', function() {
         feedbackFormContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 });
+
+// =================================================================
+// 7. YENİ: BEĞEN/BEĞENME İŞLEVSELLİĞİ (Statik)
+// =================================================================
+
+const beğenButton = document.getElementById('beğenButton');
+const beğenmeButton = document.getElementById('beğenmeButton');
+const feedbackMesaj = document.getElementById('feedbackMesaj');
+
+/**
+ * Geri besleme butonlarına tıklama olaylarını ekler.
+ * (Ücretli hosting'e geçildiğinde bu fonksiyona API çağrısı eklenecektir.)
+ * @param {boolean} basarili - İşlem başarılı mı (true=Beğen, false=Beğenme)
+ */
+function handleFeedback(basarili) {
+    const mesaj = basarili 
+        ? "✅ Geri bildiriminiz için teşekkürler! Bu çözümün işinize yaramasına sevindik."
+        : "❌ Üzgünüz, aradığınızı bulamadınız. Geri bildiriminizi dikkate alacağız.";
+    
+    feedbackMesaj.textContent = mesaj;
+    feedbackMesaj.style.display = 'block';
+
+    // Butonları devre dışı bırak (Kullanıcının sadece bir kere oy kullanması için)
+    beğenButton.disabled = true;
+    beğenmeButton.disabled = true;
+
+    // 5 saniye sonra mesajı gizle ve butonları tekrar etkinleştir
+    setTimeout(() => {
+        feedbackMesaj.style.display = 'none';
+        beğenButton.disabled = false;
+        beğenmeButton.disabled = false;
+    }, 5000);
+}
+
+// Olay Dinleyicileri Ekle
+beğenButton.addEventListener('click', () => handleFeedback(true));
+beğenmeButton.addEventListener('click', () => handleFeedback(false));

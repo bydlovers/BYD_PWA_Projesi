@@ -494,19 +494,19 @@ aramaKutusu.addEventListener('blur', function() {
 });
 
 // =================================================================
-// 6. YENİ: ÇÖZÜM BULAMADIM / GERİ BİLDİRİM MANTIĞI
+// 6. YENİ: ÇÖZÜM BULAMADIM / GOOGLE FORM MANTIĞI
 // =================================================================
 
 const cozumBulamadimButton = document.getElementById('cozumBulamadimButton');
 const feedbackForm = document.getElementById('feedbackForm');
 const feedbackTextarea = document.getElementById('feedbackTextarea');
 const gonderButton = document.getElementById('gonderButton');
+const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScVNs9nlZgDhqgGbDeTR8i6lkKz5ySG9j6_Gi8bEnm2wrUCrA/viewform"; 
 
 /**
  * "Çözüm Bulamadım" butonuna tıklandığında formu gösterir/gizler.
  */
 cozumBulamadimButton.addEventListener('click', function() {
-    // Formun görünürlük durumunu değiştir
     if (feedbackForm.classList.contains('feedback-form-visible')) {
         feedbackForm.classList.remove('feedback-form-visible');
         feedbackForm.classList.add('feedback-form-hidden');
@@ -520,7 +520,7 @@ cozumBulamadimButton.addEventListener('click', function() {
 });
 
 /**
- * Gönder butonuna tıklandığında mailto: bağlantısını oluşturur.
+ * Gönder butonuna tıklandığında, metni alıp kullanıcıyı Google Form'a yönlendirir.
  */
 gonderButton.addEventListener('click', function() {
     const geriBildirimMetni = feedbackTextarea.value.trim();
@@ -530,23 +530,28 @@ gonderButton.addEventListener('click', function() {
         return;
     }
     
-    const alici = "bydloverstr@gmail.com";
-    const konu = encodeURIComponent("BYD Bilgi Uygulaması - Kullanıcı Sorunu/Önerisi");
+    // 1. Google Form'un "pre-filled" (önceden doldurulmuş) URL'sini almalısınız.
+    //    Bunu yapmak için Google Form'unuzda "3 nokta" > "Önceden Doldurulmuş Bağlantı Al" adımlarını izleyin.
+    //    Metin alanına örnek bir metin yazın ve oluşturulan uzun URL'yi kopyalayın.
+    //    Kopyaladığınız uzun URL'de 'entry.XXXXXXXXXX=ornekyazi' kısmını bulun.
     
-    // Kullanıcının tarayıcısında Enter tuşuyla satır atlaması için metni encode ederken özel işlem yapılır.
-    const icerik = encodeURIComponent(geriBildirimMetni);
+    // 2. Örnek: Eğer uzun URL'nizdeki metin alanı kimliği 'entry.123456789' ise:
+    const ENTRY_ID = "entry.829077767"; // Google Form'daki metin alanının kimliği
     
-    // Mailto bağlantısını oluştur
-    const mailtoLink = `mailto:${alici}?subject=${konu}&body=--- Aranan Sorun ---\n${icerik}\n\n--- Geri Bildirim Tarihi ---\n${new Date().toLocaleString('tr-TR')}`;
+    // 3. Form verisini URL'ye ekle
+    const encodedMetin = encodeURIComponent(geriBildirimMetni);
     
-    // Mail uygulamasını aç
-    window.location.href = mailtoLink;
+    // 4. Nihai hedef URL'yi oluştur
+    const hedefURL = `${GOOGLE_FORM_URL}?${ENTRY_ID}=${encodedMetin}`;
 
-    // Kullanıcıya bilgi ver ve formu temizle
-    alert("Geri bildiriminiz için teşekkürler! Mail uygulamanız açılıyor. Lütfen e-postayı göndermeyi unutmayınız.");
+    // Yeni sekmede Google Form'u aç
+    window.open(hedefURL, '_blank');
+
+    // Kullanıcıya bilgi ver
+    alert("Geri bildiriminiz Google Form'a aktarıldı. Lütfen açılan sekmede 'Gönder' butonuna tıklayarak işlemi tamamlayınız.");
+
+    // Formu temizle ve gizle
     feedbackTextarea.value = "";
-    
-    // Formu tekrar gizle
     feedbackForm.classList.remove('feedback-form-visible');
     feedbackForm.classList.add('feedback-form-hidden');
     cozumBulamadimButton.textContent = "Çözüm bulamadım 😞";

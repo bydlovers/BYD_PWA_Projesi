@@ -1,5 +1,5 @@
 {
-    "versiyon": "1.5.3",
+    "versiyon": "1.5.4",
     "veriler": [
         {
             "soru": "Bagaj kapatma butonu nasıl çalışıyor? Bagajı buton ile kapatamıyorum.",
@@ -11,11 +11,11 @@
             ],
             "foto": "",
             "video": "110 km\/s Hem Ekonomik Hem Lezzetli https:\/\/youtube.com\/shorts\/1STUAQsPAro",
-            "belge": "22,23"
+            "kilavuzSayfalari": ["22", "23"]
         },
         {
             "soru": "Yetkilendirme nasıl yapılır?",
-            "cevap": "BYD Auto Uygulamasında, arabanızı ortak kullanmak istediğiniz  kişilerin e-posta adreslerini kaydederek, yetki verebilirsiniz. Ayrıntılı bilgi için aşağıdaki videoyu izleyebilirsiniz.",
+            "cevap": "BYD Auto Uygulamasında, arabanızı ortak kullanmak istediğiniz kişilerin e-posta adreslerini kaydederek, yetki verebilirsiniz. Ayrıntılı bilgi için aşağıdaki videoyu izleyebilirsiniz.",
             "kategori": "Uygulama",
             "etiketler": [
                 "Bagaj",
@@ -23,7 +23,7 @@
             ],
             "foto": "",
             "video": "https:\/\/www.youtube.com\/shorts\/Qy10IOgSjqY",
-            "belge": "5"
+            "kilavuzSayfalari": ["5"]
         },
         {
             "soru": "Lastik basıncı ne olmalı?",
@@ -38,7 +38,7 @@
             ],
             "foto": "https:\/\/www.uniroyal-tyres.com\/adobe\/dynamicmedia\/deliver\/dm-aid--1ab64736-b0d9-499f-b399-570169c1125d\/uniroyal-tyre-pressure.png",
             "video": "https:\/\/youtu.be\/Nd4ni6W_pGk?si=hUU0QcwFgu2tJmkd",
-            "belge": "4"
+            "kilavuzSayfalari": ["4"]
         },
         {
             "soru": "Lastik basıncı aracın neresinde yazar?",
@@ -53,7 +53,7 @@
             ],
             "foto": "https:\/\/superoto.com.tr\/wp-content\/uploads\/2025\/04\/lastik-basinc-uyarisi-sonmuyor.webp",
             "video": "https:\/\/youtube.com\/shorts\/1zTGbi0quY0?si=pqYYPo-GDNIfb2JV",
-            "belge": "11,12"
+            "kilavuzSayfalari": ["11", "12"]
         },
         {
             "soru": "Lastik basıncı uyarı lambası sönmüyor? SARI renk uyarı veriyor.",
@@ -68,7 +68,7 @@
             ],
             "foto": "\/lastik_basinci.jpg",
             "video": "https:\/\/youtube.com\/watch?v=LastikBasinci_Ornek",
-            "belge": "19"
+            "kilavuzSayfalari": ["19"]
         },
         {
             "soru": "Şarj süreleri nasıl optimize edilir?",
@@ -84,7 +84,7 @@
             ],
             "foto": "\/sarj_optimizasyon.jpg",
             "video": "https:\/\/youtube.com\/watch?v=SarjIpuclari_Ornek",
-            "belge": "14"
+            "kilavuzSayfalari": ["14"]
         },
         {
             "soru": "Dolphin'in bagaj hacmi kaç litredir?",
@@ -99,7 +99,7 @@
             ],
             "foto": "\/dolphin_bagaj.jpg",
             "video": "https:\/\/youtube.com\/watch?v=DolphinBagaj_Ornek",
-            "belge": "13"
+            "kilavuzSayfalari": ["13"]
         },
         {
             "soru": "Dolphin'in oto start\/stop özelliği var mı?",
@@ -114,7 +114,7 @@
             ],
             "foto": "\/dolphin_bagaj.jpg",
             "video": "https:\/\/youtube.com\/shorts\/D9jiJtPXN9Y?si=tNFPfusW25p31fbE",
-            "belge": "21,22"
+            "kilavuzSayfalari": ["21", "22"]
         }
     ]
 }

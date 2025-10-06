@@ -188,9 +188,72 @@ h1 {
     height: auto;
     margin-top: 10px;
 }
+/* Görsel Yerleşimi (Kılavuz Resimleri) */
+.kilavuz-resim-kapsayici {
+    cursor: zoom-in; /* Tıklanabilir olduğunu belirtir */
+    overflow: hidden;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+.kilavuz-resim {
+    display: block;
+    width: 100%;
+    /* Resmin dikey olarak container'a sığmasını ve tam görünmesini sağlar */
+    height: auto; 
+    /* Resimlerin kapsayıcısına tam olarak sığması ve dikey/yatay taşmaları önlemek için */
+    object-fit: contain; 
+    transition: transform 0.3s ease;
+}
 
 /* ================================================================= */
-/* 7. GERİ BİLDİRİM VE BUTON STİLLERİ (UYUMLU) */
+/* 7. Tam Ekran Modal Stilleri */
+/* ================================================================= */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 9999; 
+    padding-top: 50px; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.9); /* Siyah arka plan */
+}
+
+.modal-icerik {
+    margin: auto;
+    display: block;
+    width: 90%;
+    max-width: 900px; /* Büyük resimler için maksimum genişlik */
+    max-height: 90vh; /* Yüksekliği ekranın %90'ı ile sınırlar */
+    object-fit: contain; /* Görselin tam görünmesini sağlar */
+}
+
+/* Kapatma Butonu */
+.modal-kapat {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: zoom-out;
+}
+
+.modal-kapat:hover,
+.modal-kapat:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* ================================================================= */
+/* 8. GERİ BİLDİRİM VE BUTON STİLLERİ (UYUMLU) */
 /* ================================================================= */
 
 .feedback-container {
@@ -253,7 +316,7 @@ h1 {
 }
 
 /* ================================================================= */
-/* 8. SONUÇ GERİ BESLEME (BEĞEN/BEĞENME) STİLLERİ */
+/* 9. SONUÇ GERİ BESLEME (BEĞEN/BEĞENME) STİLLERİ */
 /* ================================================================= */
 
 .feedback-begei-alani {
@@ -306,7 +369,7 @@ h1 {
 
 
 /* ========================================================================
-   9. MOBİL UYUMLULUK
+   10. MOBİL UYUMLULUK
    ======================================================================== */
 /* Kırılma noktası 600px'e düşürüldü */
 @media (max-width: 600px) {

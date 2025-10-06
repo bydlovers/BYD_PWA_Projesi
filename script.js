@@ -38,7 +38,7 @@ function levenshteinUzakligiHesapla(s1, s2) {
 }
 
 // =================================================================
-// 1. DOM ELEMENTLERİ VE YARDIMCI DEĞİŞKENLER
+// 1. DOM ELEMENTLERİ VE YARDIMCI DEĞİŞKENLER (GÜNCELLENDİ: MODAL EKLENDİ)
 // =================================================================
 
 const aramaKutusu = document.getElementById('aramaKutusu');
@@ -54,6 +54,11 @@ const sonucBelgeLink = document.getElementById('sonucBelgeLink');
 const sonucJPGGosterici = document.getElementById('sonucJPGGosterici'); 
 const cssLink = document.getElementById('cssLink');
 const jsScript = document.getElementById('jsScript'); 
+
+// YENİ MODAL ELEMENTLERİ
+const modal = document.getElementById('modal');
+const buyukResim = document.getElementById('buyukResim');
+const modalKapat = document.getElementsByClassName('modal-kapat')[0];
 
 let byd_verileri = [];
 let aktifOneriIndeksi = -1;
@@ -126,49 +131,56 @@ function gosterSonuclari(veri) {
                                  ? veri.etiketler.join(', ')  
                                  : 'Etiket bulunmamaktadır.';
     
+    // Alanları Temizle
     if(sonucJPGGosterici) sonucJPGGosterici.innerHTML = '';
     if(sonucBelgeLink) sonucBelgeLink.innerHTML = '';
     
-    if (veri.belge && sonucJPGGosterici && sonucBelgeLink) {
-        const sayfaNumaralari = String(veri.belge).split(',').map(s => s.trim()).filter(s => s.length > 0);
-        let JPGGostericiHTML = '';
+    // =================================================================
+    // GÜNCELLENDİ: KILAVUZ GÖRÜNTÜLEME MANTIĞI: IMG VE MODAL
+    // =================================================================
+    
+    // JSON'da "kilavuzSayfalari" adında bir array (dizi) bekliyoruz.
+    if (veri.kilavuzSayfalari && Array.isArray(veri.kilavuzSayfalari) && veri.kilavuzSayfalari.length > 0) {
+        let htmlContent = '';
         
-        sayfaNumaralari.forEach(sayfaNo => {
-            const temizSayfaNo = sayfaNo.replace(/[^a-zA-Z0-9_]/g, '');
-            const JPGYolu = `/BYD_PWA_Projesi/kilavuz/kil_${temizSayfaNo}.jpg`; 
+        veri.kilavuzSayfalari.forEach(sayfaNumarasi => {
+            // Örn: /BYD_PWA_Projesi/kilavuz/kil_45.jpg (Sizin klasör yapınıza göre)
+            const temizSayfaNo = String(sayfaNumarasi).replace(/[^a-zA-Z0-9_]/g, '');
+            const imgUrl = `/BYD_PWA_Projesi/kilavuz/kil_${temizSayfaNo}.jpg`; 
             
-            JPGGostericiHTML += `
-                <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-                    <h5 class="sonuc-baslik" style="background-color: #f7f7f7; padding: 10px; margin: 0; font-size: 1em; color: #333;">
-                        Kılavuz Sayfa ${sayfaNo}
-                    </h5>
-                    <iframe 
-                        src="${JPGYolu}" 
-                        style="width: 100%; height: 600px; border: none; display: block;" 
-                        frameborder="0">
-                        Bu tarayıcı iFrame'i desteklemiyor.
-                    </iframe>
+            htmlContent += `
+                <div class="kilavuz-resim-kapsayici">
+                    <img 
+                        src="${imgUrl}" 
+                        alt="Kılavuz Sayfa ${temizSayfaNo}" 
+                        class="kilavuz-resim" 
+                        data-sayfa="${temizSayfaNo}"
+                        onclick="acModal('${imgUrl}')" 
+                    />
+                    <div style="text-align: center; font-size: 0.9em; color: #555; margin-top: -10px; margin-bottom: 5px; padding: 5px;">
+                        Sayfa ${temizSayfaNo} (Büyütmek için tıklayın)
+                    </div>
                 </div>
             `;
-
-            sonucBelgeLink.innerHTML += `
-                        <a href="${JPGYolu}" target="_blank" style="
-                            display: inline-block;
-                            margin: 5px 10px 5px 0;
-                            color: #007AFF; 
-                            font-weight: 500;">
-                            Sayfa ${sayfaNo}'yu Yeni Sekmede Aç
-                        </a>
-            `;
+            
+            // "Yeni Sekmede Aç" linkini artık göstermiyoruz, çünkü talep buydu.
         });
         
-        sonucJPGGosterici.innerHTML = JPGGostericiHTML;
+        sonucJPGGosterici.innerHTML = htmlContent;
 
+    } else if (veri.belge) {
+        // Eğer hala "belge" alanı varsa (Örn: dış PDF linki) onu gösterelim
+        sonucBelgeLink.innerHTML = `<a href="${veri.belge}" target="_blank" class="ios-button secondary-button">Kılavuzu Yeni Sekmede Aç</a>`;
     } else {
         if (sonucJPGGosterici) {
+            // Eğer ne sayfa listesi ne de dış belge linki varsa
             sonucJPGGosterici.textContent = "İlgili kılavuz belgesi bulunmamaktadır.";
         }
     }
+    // =================================================================
+    // KILAVUZ GÖRÜNTÜLEME MANTIĞI SONU
+    // =================================================================
+    
     
     if (veri.foto) {
         const resimSrc = veri.foto;
@@ -202,6 +214,38 @@ function gosterSonuclari(veri) {
     aramaKutusu.focus(); 
 
     sonucAlani.scrollIntoView({ behavior: 'smooth' });
+}
+
+// =================================================================
+// YENİ FONKSİYONLAR: Tam Ekran Modal Kontrolü
+// =================================================================
+/**
+ * Görseli tam ekran modunda açar.
+ * Bu fonksiyon, IMG elementlerinin `onclick` özelliğinde çağrılır.
+ * @param {string} resimUrl - Gösterilecek resmin URL'si.
+ */
+window.acModal = function(resimUrl) {
+    buyukResim.src = resimUrl;
+    modal.style.display = "block";
+    document.body.style.overflow = 'hidden'; // Sayfa scroll'unu kapat
+}
+
+// Kapatma butonuna tıklandığında modalı gizle
+if (modalKapat) {
+    modalKapat.onclick = function() {
+        modal.style.display = "none";
+        document.body.style.overflow = 'auto'; // Sayfa scroll'unu aç
+    }
+}
+
+// Modal dışına tıklandığında modalı gizle
+if (modal) {
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+            document.body.style.overflow = 'auto'; // Sayfa scroll'unu aç
+        }
+    }
 }
 
 // =================================================================
@@ -316,7 +360,7 @@ function aramaYap(aramaTerimi) {
                 }
 
                 if (baslangicEslesmesiVar) {
-                     // Başlangıç eşleşmesi varsa, düşük bir ceza puanı vererek kabul et
+                       // Başlangıç eşleşmesi varsa, düşük bir ceza puanı vererek kabul et
                     toplamSkor += 1.5; 
                     eslesenKelimeSayisi++;
                 } else {

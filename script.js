@@ -509,11 +509,11 @@ cozumBulamadimButton.addEventListener('click', function() {
     if (feedbackFormContainer.classList.contains('feedback-form-visible')) {
         feedbackFormContainer.classList.remove('feedback-form-visible');
         feedbackFormContainer.classList.add('feedback-form-hidden');
-        cozumBulamadimButton.textContent = "Çözüm bulamadım 😞";
+        cozumBulamadimButton.textContent = "Talebinizi Aldık 😎 ";
     } else {
         feedbackFormContainer.classList.remove('feedback-form-hidden');
         feedbackFormContainer.classList.add('feedback-form-visible');
-        cozumBulamadimButton.textContent = "Geri bildirimi gizle ▲";
+        cozumBulamadimButton.textContent = "Geri bildirimi gizle 🔺";
         
         // Iframe içine odaklanma mümkün olmayabilir, ancak scroll'u getiririz.
         feedbackFormContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });

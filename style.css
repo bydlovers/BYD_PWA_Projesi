@@ -203,7 +203,7 @@ h1 {
 
 .feedback-container {
     /* ORTALAMA VE SINIRLAMA İÇİN YENİ KOD */
-    max-width: 450px; /* .container ile aynı genişlik */
+    max-width: 100%; /* .container ile aynı genişlik */
     margin: 10px auto 20px auto; /* Ortalamak için margin: auto */
     padding: 0 15px; /* Küçük cihazlarda kenar boşluğu */
     box-sizing: border-box;

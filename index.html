@@ -19,11 +19,10 @@
 </head>
 <body>
     <div class="container">
-        <a href="index.html"><img src="photo/DestekLOGO.png" alt="YouTube" id="appLogo"></a>
-<div class="search-container">
-    <input type="text" id="aramaKutusu" placeholder="Soru, kategori veya etiket yazmaya başlayın...">
+        <a href="index.html"><img src="photo/DestekLOGO.png" alt="YouTube" id="appLogo"></a></div>
+	<div class="search-container">
+    <input type="text" id="aramaKutusu" placeholder="Soru, kategori veya etiket yazmaya başlayın..."></div>
     <div id="oneriler" class="suggestions"></div>
-</div>
 
 <div class="feedback-container">
     <button id="cozumBulamadimButton" class="ios-button secondary-button">
@@ -46,15 +45,8 @@
         </p>
     </div>
 </div>
-    
-    <div id="feedbackForm" class="feedback-form-hidden">
-        <textarea id="feedbackTextarea" placeholder="Aradığınız soruyu buraya yazın..." rows="4" required></textarea>
-        <button id="gonderButton" class="ios-button primary-button">
-            Gönder
-        </button>
-    </div>
-</div>       
-        <div id="sonucAlani">
+      
+<div id="sonucAlani" class="sonuc-alani">
             <h2><span id="sonucSoru"></span></h2>
             
             <h3 class="sonuc-baslik">Cevap</h3>
@@ -78,10 +70,7 @@
 
             <h5 class="sonuc-baslik">Etiketler</h5>
             <p id="sonucEtiketler" class="sonuc-icerik-etiketler"></p>
-        </div>
-    </div>
-<div id="sonucAlani" class="sonuc-alani">
-    <div id="feedbackBegeiAlani" class="feedback-begei-alani">
+		<div id="feedbackBegeiAlani" class="feedback-begei-alani">
         <h4 class="feedback-baslik">Burada anlatılanlar işinize yaradı mı?</h4>
         <div class="feedback-butonlar">
             <button id="beğenButton" class="ios-button feedback-button beğen">
@@ -92,7 +81,7 @@
             </button>
         </div>
         <p id="feedbackMesaj" style="font-size: 0.9em; color: #555; margin-top: 10px; display: none; text-align: center;"></p>
-    </div>
+		</div>
     
 </div>
 <script src="script.js" id="jsScript"></script>
